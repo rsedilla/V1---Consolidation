@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->foreignId('status_id')->nullable()->constrained('statuses')->onDelete('set null');
             $table->foreignId('member_type_id')->constrained('member_types')->onDelete('restrict');
+            $table->foreignId('g12_leader_id')->nullable()->constrained('g12_leaders')->onDelete('set null');
             $table->timestamps();
         });
     }
