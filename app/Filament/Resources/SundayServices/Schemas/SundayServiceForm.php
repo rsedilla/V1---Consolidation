@@ -16,7 +16,9 @@ class SundayServiceForm
             ->components([
                 Select::make('member_id')
                     ->label('Member')
-                    ->options(Member::all()->pluck('first_name', 'id'))
+                    ->options(Member::orderBy('first_name')->get()->mapWithKeys(function ($member) {
+                        return [$member->id => $member->first_name . ' ' . $member->last_name];
+                    }))
                     ->required()
                     ->searchable(),
                 DatePicker::make('service_date')

@@ -52,7 +52,7 @@ class MemberForm
                     ->options(Status::all()->pluck('name', 'id')),
                 Select::make('g12_leader_id')
                     ->label('G12 Leader')
-                    ->options(G12Leader::all()->pluck('name', 'id')),
+                    ->options(G12Leader::orderBy('name')->pluck('name', 'id')),
             ]);
     }
 }

@@ -21,12 +21,14 @@ class CellGroupForm
                     ->maxLength(255),
                 Select::make('leader_id')
                     ->label('Leader')
-                    ->options(Member::all()->pluck('first_name', 'id'))
+                    ->options(Member::orderBy('first_name')->get()->mapWithKeys(function ($member) {
+                        return [$member->id => $member->first_name . ' ' . $member->last_name];
+                    }))
                     ->required()
                     ->searchable(),
                 Select::make('g12_leader_id')
                     ->label('G12 Leader')
-                    ->options(G12Leader::all()->pluck('name', 'id'))
+                    ->options(G12Leader::orderBy('name')->pluck('name', 'id'))
                     ->searchable(),
                 Textarea::make('description')
                     ->label('Description')

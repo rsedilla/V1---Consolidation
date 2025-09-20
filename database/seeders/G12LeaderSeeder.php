@@ -9,28 +9,32 @@ class G12LeaderSeeder extends Seeder
 {
     public function run(): void
     {
-    // Remove all existing records first
-    DB::table('g12_leaders')->truncate();
+        // Remove all existing records first
+        DB::table('g12_leaders')->delete();
 
-    $leaders = [
-            'Manuel Domingo',
-            'Bon Ryan Fran',
-            'Lester De Vera',
+        $leaders = [
             'Ariel Katigbak',
-            'John Louie Arenal',
+            'Bon Ryan Fran',
+            'Carlito Ballano',
+            'Dareen Roy Rufo',
+            'Francisco Hornilla',
+            'Jayson Din Marmol',
             'Jhoemar Alcantara',
+            'John Louie Arenal',
             'John Ramil Rabe',
             'Justin John Flora',
-            'Carlito Ballano',
-            'Francisco Hornilla',
-            'Phillip Wilson Grande',
+            'Lester De Vera',
+            'Manuel Domingo',
             'Mark Filbert Valdez',
-            'Jayson Din Marmol',
-            'Dareen Roy Rufo',
+            'Phillip Wilson Grande',
         ];
 
         foreach ($leaders as $name) {
-            DB::table('g12_leaders')->insert(['name' => $name]);
+            DB::table('g12_leaders')->insert([
+                'name' => $name,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }
