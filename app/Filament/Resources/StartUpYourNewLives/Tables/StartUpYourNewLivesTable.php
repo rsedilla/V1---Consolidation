@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 
 class StartUpYourNewLivesTable
 {
@@ -13,7 +14,41 @@ class StartUpYourNewLivesTable
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('member.first_name')
+                    ->label('Member')
+                    ->formatStateUsing(fn ($record) => $record->member->first_name . ' ' . $record->member->last_name)
+                    ->searchable(['first_name', 'last_name'])
+                    ->sortable(),
+                TextColumn::make('lessons_completed')
+                    ->label('Progress')
+                    ->formatStateUsing(function ($record) {
+                        $completed = 0;
+                        for ($i = 1; $i <= 10; $i++) {
+                            if ($record->{"lesson_{$i}_completion_date"}) {
+                                $completed++;
+                            }
+                        }
+                        return "{$completed}/10 lessons";
+                    })
+                    ->badge(),
+                TextColumn::make('lesson_number')
+                    ->label('Legacy Lesson #')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('completion_date')
+                    ->label('Legacy Completion')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('notes')
+                    ->label('Notes')
+                    ->limit(30)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -25,6 +60,7 @@ class StartUpYourNewLivesTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }
