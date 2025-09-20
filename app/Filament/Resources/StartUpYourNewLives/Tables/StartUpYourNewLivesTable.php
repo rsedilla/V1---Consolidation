@@ -31,15 +31,6 @@ class StartUpYourNewLivesTable
                         return "{$completed}/10 lessons";
                     })
                     ->badge(),
-                TextColumn::make('lesson_number')
-                    ->label('Legacy Lesson #')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('completion_date')
-                    ->label('Legacy Completion')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('notes')
                     ->label('Notes')
                     ->limit(30)

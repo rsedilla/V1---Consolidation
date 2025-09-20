@@ -48,17 +48,6 @@ class StartUpYourNewLifeForm
                     ->label('Lesson 9: Spiritual Breathing'),
                 DatePicker::make('lesson_10_completion_date')
                     ->label('Lesson 10: Understanding the Bible'),
-
-                // Legacy fields (hidden for new records, visible for existing)
-                TextInput::make('lesson_number')
-                    ->label('Legacy Lesson Number')
-                    ->numeric()
-                    ->minValue(1)
-                    ->maxValue(10)
-                    ->hidden(fn ($record) => $record === null), // Hide on create
-                DatePicker::make('completion_date')
-                    ->label('Legacy Completion Date')
-                    ->hidden(fn ($record) => $record === null), // Hide on create
             ]);
     }
 }

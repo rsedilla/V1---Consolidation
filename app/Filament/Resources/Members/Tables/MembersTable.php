@@ -38,6 +38,11 @@ class MembersTable
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
                     ->sortable(),
+                TextColumn::make('consolidator')
+                    ->label('Consolidator')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Not assigned'),
                 TextColumn::make('created_at')
                     ->label('Joined')
                     ->dateTime()

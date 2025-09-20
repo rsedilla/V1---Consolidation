@@ -53,6 +53,10 @@ class MemberForm
                 Select::make('g12_leader_id')
                     ->label('G12 Leader')
                     ->options(G12Leader::orderBy('name')->pluck('name', 'id')),
+                TextInput::make('consolidator')
+                    ->label('Consolidator')
+                    ->maxLength(255)
+                    ->placeholder('Enter consolidator name for VIP members'),
             ]);
     }
 }

@@ -16,7 +16,8 @@ class Member extends Model
         'address',
         'status_id',
         'member_type_id',
-        'g12_leader_id'
+        'g12_leader_id',
+        'consolidator'
     ];
 
     public function memberType()
