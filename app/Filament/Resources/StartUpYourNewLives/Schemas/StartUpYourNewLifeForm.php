@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\StartUpYourNewLives\Schemas;
 
 use App\Models\Member;
+use App\Filament\Traits\HasMemberFields;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -11,17 +12,12 @@ use Filament\Forms\Components\Textarea;
 
 class StartUpYourNewLifeForm
 {
+    use HasMemberFields;
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Select::make('member_id')
-                    ->label('Member')
-                    ->options(Member::orderBy('first_name')->get()->mapWithKeys(function ($member) {
-                        return [$member->id => $member->first_name . ' ' . $member->last_name];
-                    }))
-                    ->required()
-                    ->searchable(),
+                self::getVipMemberField(),
                 
                 Textarea::make('notes')
                     ->label('General Notes')

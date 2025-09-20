@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -19,6 +20,22 @@ class UsersTable
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
+                TextColumn::make('role')
+                    ->label('Role')
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'admin' => 'Administrator',
+                        'leader' => 'Leader',
+                        'user' => 'User',
+                        default => 'User',
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'admin' => 'danger',
+                        'leader' => 'warning', 
+                        'user' => 'secondary',
+                        default => 'secondary',
+                    })
+                    ->sortable(),
                 TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
@@ -32,7 +49,14 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('role')
+                    ->label('Role')
+                    ->options([
+                        'user' => 'User',
+                        'leader' => 'Leader',
+                        'admin' => 'Administrator',
+                    ])
+                    ->placeholder('All Roles'),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -19,18 +19,69 @@ class StartUpYourNewLivesTable
                     ->formatStateUsing(fn ($record) => $record->member->first_name . ' ' . $record->member->last_name)
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
-                TextColumn::make('lessons_completed')
-                    ->label('Progress')
-                    ->formatStateUsing(function ($record) {
-                        $completed = 0;
-                        for ($i = 1; $i <= 10; $i++) {
-                            if ($record->{"lesson_{$i}_completion_date"}) {
-                                $completed++;
-                            }
-                        }
-                        return "{$completed}/10 lessons";
-                    })
-                    ->badge(),
+                
+                // Individual Lesson Status Columns (L1-L10)
+                TextColumn::make('lesson_1_completion_date')
+                    ->label('L1')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_2_completion_date')
+                    ->label('L2')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_3_completion_date')
+                    ->label('L3')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_4_completion_date')
+                    ->label('L4')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_5_completion_date')
+                    ->label('L5')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_6_completion_date')
+                    ->label('L6')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_7_completion_date')
+                    ->label('L7')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_8_completion_date')
+                    ->label('L8')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_9_completion_date')
+                    ->label('L9')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                TextColumn::make('lesson_10_completion_date')
+                    ->label('L10')
+                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->placeholder('n/a'),
+                
                 TextColumn::make('notes')
                     ->label('Notes')
                     ->limit(30)

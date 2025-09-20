@@ -17,7 +17,7 @@ class Member extends Model
         'status_id',
         'member_type_id',
         'g12_leader_id',
-        'consolidator'
+        'consolidator_id'
     ];
 
     public function memberType()
@@ -35,6 +35,11 @@ class Member extends Model
         return $this->belongsTo(G12Leader::class);
     }
 
+    public function consolidator()
+    {
+        return $this->belongsTo(Member::class, 'consolidator_id');
+    }
+
     public function sundayServices()
     {
         return $this->hasMany(SundayService::class);
@@ -48,5 +53,38 @@ class Member extends Model
     public function startUpYourNewLife()
     {
         return $this->hasMany(StartUpYourNewLife::class);
+    }
+
+    // Scope to get only consolidators
+    public function scopeConsolidators($query)
+    {
+        return $query->whereHas('memberType', function ($q) {
+            $q->where('name', 'Consolidator');
+        });
+    }
+
+    // Scope to get only VIP members
+    public function scopeVips($query)
+    {
+        return $query->whereHas('memberType', function ($q) {
+            $q->where('name', 'VIP');
+        });
+    }
+
+    /**
+     * Check if this member is qualified for Life Class
+     * Uses MemberCompletionService for the logic
+     */
+    public function isQualifiedForLifeClass(): bool
+    {
+        return \App\Services\MemberCompletionService::isQualifiedForLifeClass($this);
+    }
+
+    /**
+     * Get completion progress for this member
+     */
+    public function getCompletionProgress(): array
+    {
+        return \App\Services\MemberCompletionService::getCompletionProgress($this);
     }
 }

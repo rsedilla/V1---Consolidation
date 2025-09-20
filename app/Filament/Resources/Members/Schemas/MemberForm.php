@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Members\Schemas;
 use App\Models\MemberType;
 use App\Models\Status;
 use App\Models\G12Leader;
+use App\Models\Member;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
@@ -53,10 +54,13 @@ class MemberForm
                 Select::make('g12_leader_id')
                     ->label('G12 Leader')
                     ->options(G12Leader::orderBy('name')->pluck('name', 'id')),
-                TextInput::make('consolidator')
+                Select::make('consolidator_id')
                     ->label('Consolidator')
-                    ->maxLength(255)
-                    ->placeholder('Enter consolidator name for VIP members'),
+                    ->options(Member::consolidators()->orderBy('first_name')->get()->mapWithKeys(function ($member) {
+                        return [$member->id => $member->first_name . ' ' . $member->last_name];
+                    }))
+                    ->searchable()
+                    ->placeholder('Select consolidator for VIP members'),
             ]);
     }
 }

@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'role',
         'password',
     ];
 
@@ -44,5 +45,42 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is a leader
+     */
+    public function isLeader(): bool
+    {
+        return $this->role === 'leader';
+    }
+
+    /**
+     * Check if user has admin or leader privileges
+     */
+    public function hasLeadershipRole(): bool
+    {
+        return in_array($this->role, ['admin', 'leader']);
+    }
+
+    /**
+     * Get role display name
+     */
+    public function getRoleDisplayAttribute(): string
+    {
+        return match($this->role) {
+            'admin' => 'Administrator',
+            'leader' => 'Leader',
+            'user' => 'User',
+            default => 'User',
+        };
     }
 }
