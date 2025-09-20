@@ -5,12 +5,8 @@ namespace App\Filament\Resources\Members\Schemas;
 use App\Models\MemberType;
 use App\Models\Status;
 use App\Models\G12Leader;
+use Filament\Forms;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 
 class MemberForm
 {
@@ -18,46 +14,46 @@ class MemberForm
     {
         return $schema
             ->components([
-                Section::make('Personal Information')
+                Forms\Components\Section::make('Personal Information')
                     ->schema([
-                        TextInput::make('first_name')
+                        Forms\Components\TextInput::make('first_name')
                             ->label('First Name')
                             ->required()
                             ->maxLength(255),
-                        TextInput::make('middle_name')
+                        Forms\Components\TextInput::make('middle_name')
                             ->label('Middle Name')
                             ->maxLength(255),
-                        TextInput::make('last_name')
+                        Forms\Components\TextInput::make('last_name')
                             ->label('Last Name')
                             ->required()
                             ->maxLength(255),
-                        DatePicker::make('birthday')
+                        Forms\Components\DatePicker::make('birthday')
                             ->label('Birthday'),
-                        TextInput::make('email')
+                        Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->email()
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
-                        TextInput::make('phone')
+                        Forms\Components\TextInput::make('phone')
                             ->label('Phone')
                             ->tel()
                             ->maxLength(255),
-                        Textarea::make('address')
+                        Forms\Components\Textarea::make('address')
                             ->label('Address')
                             ->rows(3),
                     ])
                     ->columns(2),
-                Section::make('Assignment Information')
+                Forms\Components\Section::make('Assignment Information')
                     ->schema([
-                        Select::make('member_type_id')
+                        Forms\Components\Select::make('member_type_id')
                             ->label('Member Type')
                             ->options(MemberType::all()->pluck('name', 'id'))
                             ->required(),
-                        Select::make('status_id')
+                        Forms\Components\Select::make('status_id')
                             ->label('Status')
                             ->options(Status::all()->pluck('name', 'id')),
-                        Select::make('g12_leader_id')
+                        Forms\Components\Select::make('g12_leader_id')
                             ->label('G12 Leader')
                             ->options(G12Leader::all()->pluck('name', 'id')),
                     ])

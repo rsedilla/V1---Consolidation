@@ -20,6 +20,10 @@ class LifeclassCandidateResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $navigationLabel = 'Life Class Candidates';
+
+    protected static ?int $navigationSort = 6;
+
     public static function form(Schema $schema): Schema
     {
         return LifeclassCandidateForm::configure($schema);
