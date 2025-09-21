@@ -6,16 +6,20 @@ use App\Models\MemberType;
 use App\Models\Status;
 use App\Models\G12Leader;
 use App\Models\Member;
+use App\Models\User;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Illuminate\Support\Facades\Auth;
 
 class MemberForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $user = Auth::user();
+        
         return $schema
             ->components([
                 TextInput::make('first_name')
@@ -53,14 +57,14 @@ class MemberForm
                     ->options(Status::all()->pluck('name', 'id')),
                 Select::make('g12_leader_id')
                     ->label('G12 Leader')
-                    ->options(G12Leader::orderBy('name')->pluck('name', 'id')),
+                    ->options($user instanceof User ? $user->getAvailableG12Leaders() : [])
+                    ->placeholder($user instanceof User && $user->isLeader() ? 'Your G12 Leader will be auto-assigned' : 'Select G12 Leader')
+                    ->required($user instanceof User && $user->isAdmin()),
                 Select::make('consolidator_id')
                     ->label('Consolidator')
-                    ->options(Member::consolidators()->orderBy('first_name')->get()->mapWithKeys(function ($member) {
-                        return [$member->id => $member->first_name . ' ' . $member->last_name];
-                    }))
+                    ->options($user instanceof User ? $user->getAvailableConsolidators() : [])
                     ->searchable()
-                    ->placeholder('Select consolidator for VIP members'),
+                    ->placeholder($user instanceof User && $user->isLeader() ? 'Select from your consolidators' : 'Select consolidator for VIP members'),
             ]);
     }
 }

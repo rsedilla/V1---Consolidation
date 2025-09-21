@@ -108,4 +108,58 @@ class User extends Authenticatable
     {
         return $this->g12_leader_id;
     }
+
+    /**
+     * Get available G12 leaders for form selection based on user role
+     * Leaders can only select themselves, admins can select any
+     */
+    public function getAvailableG12Leaders(): array
+    {
+        if ($this->isAdmin()) {
+            // Admins can assign any G12 leader
+            return G12Leader::orderBy('name')->pluck('name', 'id')->toArray();
+        }
+        
+        if ($this->canAccessLeaderData()) {
+            // Leaders can only assign their own G12 leader
+            $g12Leader = $this->g12Leader;
+            return $g12Leader ? [$g12Leader->id => $g12Leader->name] : [];
+        }
+
+        // Other users cannot assign G12 leaders
+        return [];
+    }
+
+    /**
+     * Get available consolidators for form selection based on user role
+     * Leaders see only consolidators under their care, admins see all
+     */
+    public function getAvailableConsolidators(): array
+    {
+        if ($this->isAdmin()) {
+            // Admins can see all consolidators
+            return Member::consolidators()
+                ->orderBy('first_name')
+                ->get()
+                ->mapWithKeys(function ($member) {
+                    return [$member->id => $member->first_name . ' ' . $member->last_name];
+                })
+                ->toArray();
+        }
+        
+        if ($this->canAccessLeaderData()) {
+            // Leaders see only consolidators under their G12 leadership
+            return Member::consolidators()
+                ->forG12Leader($this->getG12LeaderId())
+                ->orderBy('first_name')
+                ->get()
+                ->mapWithKeys(function ($member) {
+                    return [$member->id => $member->first_name . ' ' . $member->last_name];
+                })
+                ->toArray();
+        }
+
+        // Other users cannot see consolidators
+        return [];
+    }
 }
