@@ -55,6 +55,11 @@ class Member extends Model
         return $this->hasMany(StartUpYourNewLife::class);
     }
 
+    public function lifeclassCandidates()
+    {
+        return $this->hasMany(LifeclassCandidate::class);
+    }
+
     // Scope to get only consolidators
     public function scopeConsolidators($query)
     {
