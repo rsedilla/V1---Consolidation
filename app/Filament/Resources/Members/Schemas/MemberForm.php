@@ -54,7 +54,9 @@ class MemberForm
                     ->required(),
                 Select::make('status_id')
                     ->label('Status')
-                    ->options(Status::all()->pluck('name', 'id')),
+                    ->options(Status::all()->pluck('name', 'id'))
+                    ->placeholder('Select status')
+                    ->required(),
                 Select::make('g12_leader_id')
                     ->label('G12 Leader')
                     ->options($user instanceof User ? $user->getAvailableG12Leaders() : [])
