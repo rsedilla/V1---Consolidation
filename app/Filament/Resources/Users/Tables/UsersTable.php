@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use App\Models\G12Leader;
 
 class UsersTable
 {
@@ -36,6 +37,13 @@ class UsersTable
                         default => 'secondary',
                     })
                     ->sortable(),
+                TextColumn::make('g12Leader.name')
+                    ->label('G12 Leader')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Not assigned')
+                    ->badge()
+                    ->color('info'),
                 TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
@@ -57,6 +65,10 @@ class UsersTable
                         'admin' => 'Administrator',
                     ])
                     ->placeholder('All Roles'),
+                SelectFilter::make('g12_leader_id')
+                    ->label('G12 Leader')
+                    ->options(G12Leader::orderBy('name')->pluck('name', 'id'))
+                    ->placeholder('All G12 Leaders'),
             ])
             ->recordActions([
                 EditAction::make(),

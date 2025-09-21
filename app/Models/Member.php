@@ -72,6 +72,15 @@ class Member extends Model
     }
 
     /**
+     * Scope to filter members by G12 leader
+     * Used for leader-specific data filtering
+     */
+    public function scopeForG12Leader($query, $g12LeaderId)
+    {
+        return $query->where('g12_leader_id', $g12LeaderId);
+    }
+
+    /**
      * Check if this member is qualified for Life Class
      * Uses MemberCompletionService for the logic
      */

@@ -8,11 +8,14 @@ use App\Filament\Resources\SundayServices\Pages\ListSundayServices;
 use App\Filament\Resources\SundayServices\Schemas\SundayServiceForm;
 use App\Filament\Resources\SundayServices\Tables\SundayServicesTable;
 use App\Models\SundayService;
+use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class SundayServiceResource extends Resource
 {
@@ -23,6 +26,22 @@ class SundayServiceResource extends Resource
     protected static ?string $navigationLabel = 'Sunday Services';
 
     protected static ?int $navigationSort = 4;
+
+    /**
+     * Filter records based on user role and G12 leader assignment
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+        
+        if ($user instanceof User && $user->canAccessLeaderData()) {
+            // Leaders see only records for their assigned members
+            return parent::getEloquentQuery()->forG12Leader($user->getG12LeaderId());
+        }
+        
+        // Admins see everything, other users see nothing
+        return parent::getEloquentQuery();
+    }
 
     public static function form(Schema $schema): Schema
     {

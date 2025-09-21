@@ -27,6 +27,7 @@ class G12LeaderSeeder extends Seeder
             'Manuel Domingo',
             'Mark Filbert Valdez',
             'Phillip Wilson Grande',
+            'Raymond Sedilla',
         ];
 
         foreach ($leaders as $name) {

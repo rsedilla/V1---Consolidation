@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -23,6 +24,24 @@ class UserResource extends Resource
     protected static ?string $navigationLabel = 'Users';
 
     protected static ?int $navigationSort = 7;
+
+    /**
+     * Hide Users navigation for non-admin users
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = Auth::user();
+        return $user instanceof User && $user->isAdmin();
+    }
+
+    /**
+     * Only allow admins to access user management
+     */
+    public static function canViewAny(): bool
+    {
+        $user = Auth::user();
+        return $user instanceof User && $user->isAdmin();
+    }
 
     public static function form(Schema $schema): Schema
     {

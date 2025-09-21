@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'role',
+        'g12_leader_id',
         'password',
     ];
 
@@ -82,5 +83,29 @@ class User extends Authenticatable
             'user' => 'User',
             default => 'User',
         };
+    }
+
+    /**
+     * Get the G12 leader this user is assigned to
+     */
+    public function g12Leader()
+    {
+        return $this->belongsTo(G12Leader::class);
+    }
+
+    /**
+     * Check if user can access G12 leader specific data
+     */
+    public function canAccessLeaderData(): bool
+    {
+        return $this->isLeader() && $this->g12_leader_id !== null;
+    }
+
+    /**
+     * Get the G12 leader ID for filtering
+     */
+    public function getG12LeaderId(): ?int
+    {
+        return $this->g12_leader_id;
     }
 }
