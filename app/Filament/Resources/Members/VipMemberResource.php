@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Members;
 
-use App\Filament\Resources\Members\Pages\CreateMember;
-use App\Filament\Resources\Members\Pages\EditMember;
-use App\Filament\Resources\Members\Pages\ListMembers;
+use App\Filament\Resources\Members\VipMemberResource\Pages\CreateVipMember;
+use App\Filament\Resources\Members\VipMemberResource\Pages\EditVipMember;
+use App\Filament\Resources\Members\VipMemberResource\Pages\ListVipMembers;
 use App\Filament\Resources\Members\Schemas\MemberForm;
 use App\Filament\Resources\Members\Tables\MembersTable;
 use App\Models\Member;
@@ -51,9 +51,9 @@ class VipMemberResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListMembers::route('/'),
-            'create' => CreateMember::route('/create'),
-            'edit' => EditMember::route('/{record}/edit'),
+            'index' => ListVipMembers::route('/'),
+            'create' => CreateVipMember::route('/create'),
+            'edit' => EditVipMember::route('/{record}/edit'),
         ];
     }
 

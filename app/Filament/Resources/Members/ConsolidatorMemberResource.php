@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Members;
 
-use App\Filament\Resources\Members\Pages\CreateMember;
-use App\Filament\Resources\Members\Pages\EditMember;
-use App\Filament\Resources\Members\Pages\ListMembers;
+use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\CreateConsolidatorMember;
+use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\EditConsolidatorMember;
+use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\ListConsolidatorMembers;
 use App\Filament\Resources\Members\Schemas\MemberForm;
 use App\Filament\Resources\Members\Tables\MembersTable;
 use App\Models\Member;
@@ -51,9 +51,9 @@ class ConsolidatorMemberResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListMembers::route('/'),
-            'create' => CreateMember::route('/create'),
-            'edit' => EditMember::route('/{record}/edit'),
+            'index' => ListConsolidatorMembers::route('/'),
+            'create' => CreateConsolidatorMember::route('/create'),
+            'edit' => EditConsolidatorMember::route('/{record}/edit'),
         ];
     }
 
