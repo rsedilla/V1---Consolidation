@@ -10,8 +10,6 @@ class StartUpYourNewLife extends Model
     
     protected $fillable = [
         'member_id',
-        'lesson_number',
-        'completion_date',
         'notes',
         'lesson_1_completion_date',
         'lesson_2_completion_date',
@@ -26,7 +24,6 @@ class StartUpYourNewLife extends Model
     ];
 
     protected $casts = [
-        'completion_date' => 'date',
         'lesson_1_completion_date' => 'date',
         'lesson_2_completion_date' => 'date',
         'lesson_3_completion_date' => 'date',

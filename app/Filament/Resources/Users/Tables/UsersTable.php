@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -72,10 +73,21 @@ class UsersTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete User')
+                    ->modalDescription('Are you sure you want to permanently delete this user? This action cannot be undone and will remove all associated data.')
+                    ->modalSubmitActionLabel('Yes, Delete Permanently')
+                    ->color('danger'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->requiresConfirmation()
+                        ->modalHeading('Delete Selected Users')
+                        ->modalDescription('Are you sure you want to permanently delete the selected users? This action cannot be undone and will remove all associated data.')
+                        ->modalSubmitActionLabel('Yes, Delete Permanently')
+                        ->color('danger'),
                 ]),
             ]);
     }

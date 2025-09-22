@@ -4,6 +4,7 @@ namespace App\Filament\Resources\StartUpYourNewLives\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -97,10 +98,21 @@ class StartUpYourNewLivesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Start Up Your New Life Record')
+                    ->modalDescription('Are you sure you want to permanently delete this Start Up Your New Life record? This action cannot be undone and will remove all lesson progress data.')
+                    ->modalSubmitActionLabel('Yes, Delete Permanently')
+                    ->color('danger'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->requiresConfirmation()
+                        ->modalHeading('Delete Selected Start Up Your New Life Records')
+                        ->modalDescription('Are you sure you want to permanently delete the selected Start Up Your New Life records? This action cannot be undone and will remove all lesson progress data.')
+                        ->modalSubmitActionLabel('Yes, Delete Permanently')
+                        ->color('danger'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

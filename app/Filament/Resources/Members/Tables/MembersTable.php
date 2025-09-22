@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Members\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
@@ -42,6 +43,17 @@ class MembersTable
                     ->placeholder('N/A')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('vipStatus.name')
+                    ->label('VIP Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'New Believer' => 'success',
+                        'Recommitment' => 'warning', 
+                        'Other Church' => 'info',
+                        default => 'secondary',
+                    })
+                    ->placeholder('Not Set')
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Joined')
                     ->dateTime()
@@ -53,10 +65,23 @@ class MembersTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Member')
+                    ->modalDescription('Are you sure you want to permanently delete this member? This action cannot be undone and will permanently remove all member data from the system.')
+                    ->modalSubmitActionLabel('Yes, Delete Permanently')
+                    ->modalIcon('heroicon-o-exclamation-triangle')
+                    ->color('danger'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->requiresConfirmation()
+                        ->modalHeading('Delete Selected Members')
+                        ->modalDescription('Are you sure you want to permanently delete the selected members? This action cannot be undone and will permanently remove all member data from the system.')
+                        ->modalSubmitActionLabel('Yes, Delete Permanently')
+                        ->modalIcon('heroicon-o-exclamation-triangle')
+                        ->color('danger'),
                 ]),
             ])
             ->defaultSort('last_name', 'asc');

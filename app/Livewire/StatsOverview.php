@@ -37,7 +37,19 @@ class StatsOverview extends StatsOverviewWidget
                     ->descriptionIcon('heroicon-o-users')
                     ->color('info'),
                 
-                Stat::make('Completed Lessons', StartUpYourNewLife::forG12Leader($g12LeaderId)->whereNotNull('completion_date')->count())
+                Stat::make('Completed Lessons', StartUpYourNewLife::forG12Leader($g12LeaderId)
+                    ->where(function($query) {
+                        $query->whereNotNull('lesson_1_completion_date')
+                            ->orWhereNotNull('lesson_2_completion_date')
+                            ->orWhereNotNull('lesson_3_completion_date')
+                            ->orWhereNotNull('lesson_4_completion_date')
+                            ->orWhereNotNull('lesson_5_completion_date')
+                            ->orWhereNotNull('lesson_6_completion_date')
+                            ->orWhereNotNull('lesson_7_completion_date')
+                            ->orWhereNotNull('lesson_8_completion_date')
+                            ->orWhereNotNull('lesson_9_completion_date')
+                            ->orWhereNotNull('lesson_10_completion_date');
+                    })->count())
                     ->description('SUYNL lessons completed by my members')
                     ->descriptionIcon('heroicon-o-academic-cap')
                     ->color('warning'),
@@ -75,7 +87,18 @@ class StatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-users')
                 ->color('info'),
             
-            Stat::make('Completed Lessons', StartUpYourNewLife::whereNotNull('completion_date')->count())
+            Stat::make('Completed Lessons', StartUpYourNewLife::where(function($query) {
+                $query->whereNotNull('lesson_1_completion_date')
+                    ->orWhereNotNull('lesson_2_completion_date')
+                    ->orWhereNotNull('lesson_3_completion_date')
+                    ->orWhereNotNull('lesson_4_completion_date')
+                    ->orWhereNotNull('lesson_5_completion_date')
+                    ->orWhereNotNull('lesson_6_completion_date')
+                    ->orWhereNotNull('lesson_7_completion_date')
+                    ->orWhereNotNull('lesson_8_completion_date')
+                    ->orWhereNotNull('lesson_9_completion_date')
+                    ->orWhereNotNull('lesson_10_completion_date');
+            })->count())
                 ->description('SUYNL lessons completed')
                 ->descriptionIcon('heroicon-o-academic-cap')
                 ->color('warning'),

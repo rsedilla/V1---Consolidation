@@ -7,6 +7,7 @@ use App\Models\Status;
 use App\Models\G12Leader;
 use App\Models\Member;
 use App\Models\User;
+use App\Models\VipStatus;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
@@ -66,7 +67,13 @@ class MemberForm
                     ->label('Consolidator')
                     ->options($user instanceof User ? $user->getAvailableConsolidators() : [])
                     ->searchable()
+                    ->preload()
                     ->placeholder($user instanceof User && $user->isLeader() ? 'Select from your consolidators' : 'Select consolidator for VIP members'),
+                Select::make('vip_status_id')
+                    ->label('VIP Status')
+                    ->options(VipStatus::orderBy('name')->pluck('name', 'id'))
+                    ->placeholder('Select VIP status')
+                    ->searchable(),
             ]);
     }
 }

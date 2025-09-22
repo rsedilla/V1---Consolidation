@@ -94,6 +94,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the G12 leader record this user represents (if they are a G12 leader)
+     */
+    public function leaderRecord()
+    {
+        return $this->hasOne(G12Leader::class);
+    }
+
+    /**
+     * Get all members under this user's G12 leadership (if they are a G12 leader)
+     */
+    public function leaderMembers()
+    {
+        return $this->hasManyThrough(Member::class, G12Leader::class, 'user_id', 'g12_leader_id');
+    }
+
+    /**
      * Check if user can access G12 leader specific data
      */
     public function canAccessLeaderData(): bool
@@ -111,7 +127,7 @@ class User extends Authenticatable
 
     /**
      * Get available G12 leaders for form selection based on user role
-     * Leaders can only select themselves, admins can select any
+     * Leaders can only select from their hierarchy, admins can select any
      */
     public function getAvailableG12Leaders(): array
     {
@@ -120,10 +136,13 @@ class User extends Authenticatable
             return G12Leader::orderBy('name')->pluck('name', 'id')->toArray();
         }
         
-        if ($this->canAccessLeaderData()) {
-            // Leaders can only assign their own G12 leader
-            $g12Leader = $this->g12Leader;
-            return $g12Leader ? [$g12Leader->id => $g12Leader->name] : [];
+        if ($this->leaderRecord) {
+            // Leaders can only assign from their hierarchy (themselves + descendants)
+            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+            return G12Leader::whereIn('id', $visibleLeaderIds)
+                ->orderBy('name')
+                ->pluck('name', 'id')
+                ->toArray();
         }
 
         // Other users cannot assign G12 leaders
@@ -132,7 +151,7 @@ class User extends Authenticatable
 
     /**
      * Get available consolidators for form selection based on user role
-     * Leaders see only consolidators under their care, admins see all
+     * Leaders see consolidators in their entire hierarchy (themselves + all descendants)
      */
     public function getAvailableConsolidators(): array
     {
@@ -147,19 +166,66 @@ class User extends Authenticatable
                 ->toArray();
         }
         
-        if ($this->canAccessLeaderData()) {
-            // Leaders see only consolidators under their G12 leadership
-            return Member::consolidators()
-                ->forG12Leader($this->getG12LeaderId())
+        if ($this->leaderRecord) {
+            // Leaders see consolidators in their entire hierarchy (including descendants)
+            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+            
+            $consolidatorsInHierarchy = Member::consolidators()
+                ->whereIn('g12_leader_id', $visibleLeaderIds)
                 ->orderBy('first_name')
-                ->get()
-                ->mapWithKeys(function ($member) {
-                    return [$member->id => $member->first_name . ' ' . $member->last_name];
-                })
-                ->toArray();
+                ->get();
+            
+            return $consolidatorsInHierarchy->mapWithKeys(function ($member) {
+                return [$member->id => $member->first_name . ' ' . $member->last_name];
+            })->toArray();
         }
 
         // Other users cannot see consolidators
         return [];
+    }
+
+    /**
+     * Get all members visible to this user based on hierarchy
+     */
+    public function getVisibleMembers()
+    {
+        if ($this->isAdmin()) {
+            // Admins can see all members
+            return Member::query();
+        }
+        
+        if ($this->leaderRecord) {
+            // Leaders can see members in their entire hierarchy
+            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+            return Member::whereIn('g12_leader_id', $visibleLeaderIds);
+        }
+
+        // Other users cannot see any members
+        return Member::whereRaw('1 = 0'); // Empty query
+    }
+
+    /**
+     * Check if user can view a specific member
+     */
+    public function canViewMember(Member $member): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+        
+        if ($this->leaderRecord) {
+            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+            return in_array($member->g12_leader_id, $visibleLeaderIds);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if user can edit a specific member
+     */
+    public function canEditMember(Member $member): bool
+    {
+        return $this->canViewMember($member);
     }
 }

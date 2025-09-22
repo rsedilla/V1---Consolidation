@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SundayServices\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -66,10 +67,21 @@ class SundayServicesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Sunday Service Record')
+                    ->modalDescription('Are you sure you want to permanently delete this Sunday service record? This action cannot be undone and will remove all session data.')
+                    ->modalSubmitActionLabel('Yes, Delete Permanently')
+                    ->color('danger'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->requiresConfirmation()
+                        ->modalHeading('Delete Selected Sunday Service Records')
+                        ->modalDescription('Are you sure you want to permanently delete the selected Sunday service records? This action cannot be undone and will remove all session data.')
+                        ->modalSubmitActionLabel('Yes, Delete Permanently')
+                        ->color('danger'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

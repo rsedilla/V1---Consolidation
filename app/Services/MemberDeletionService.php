@@ -71,7 +71,7 @@ class MemberDeletionService
                     }
                 }
 
-                // 6. Store member info before deletion
+                // 5. Store member info before deletion
                 $result['deleted_member'] = [
                     'id' => $member->id,
                     'name' => $member->first_name . ' ' . $member->last_name,
@@ -79,34 +79,35 @@ class MemberDeletionService
                     'member_type' => $member->memberType?->name,
                 ];
 
-                // 7. Log audit entry BEFORE deletion
+                // 6. Log audit entry BEFORE deletion
                 AuditLog::log(
                     'delete',
                     'Member',
                     $member->id,
                     $member->toArray(),
                     null,
-                    "Member deleted with {$result['reassigned_consolidator_dependents']} consolidator dependents and {$result['reassigned_g12_dependents']} G12 dependents reassigned."
+                    "Member permanently deleted with {$result['reassigned_consolidator_dependents']} consolidator dependents and {$result['reassigned_g12_dependents']} G12 dependents reassigned."
                 );
 
-                // 8. Soft delete the member
+                // 7. Permanently delete the member (no more soft delete)
                 $member->delete();
 
-                // 9. Send notification to admin
-                $adminEmail = config('app.admin_email', 'rsedilla@gmail.com');
+                // 8. Send notification to admin users
+                $adminUsers = User::where('role', 'admin')->get();
                 $deletedBy = Auth::user()?->name ?? 'System';
                 
-                Notification::route('mail', $adminEmail)
-                    ->notify(new MemberDeletedNotification(
+                foreach ($adminUsers as $admin) {
+                    $admin->notify(new MemberDeletedNotification(
                         $result['deleted_member'],
                         $result,
                         $deletedBy
                     ));
+                }
 
                 $result['success'] = true;
-                $result['message'] = "Member '{$member->first_name} {$member->last_name}' deleted successfully with {$result['reassigned_consolidator_dependents']} consolidator dependents and {$result['reassigned_g12_dependents']} G12 dependents reassigned.";
+                $result['message'] = "Member '{$member->first_name} {$member->last_name}' permanently deleted with {$result['reassigned_consolidator_dependents']} consolidator dependents and {$result['reassigned_g12_dependents']} G12 dependents reassigned.";
 
-                Log::info("Successfully deleted member {$member->id} ({$member->first_name} {$member->last_name})");
+                Log::info("Successfully permanently deleted member {$member->id} ({$member->first_name} {$member->last_name})");
 
                 return $result;
 
@@ -149,15 +150,15 @@ class MemberDeletionService
         $g12Count = $dependents['g12_dependents']->count();
         
         return [
-            'can_delete' => true, // Always true with soft deletes and reassignment
+            'can_delete' => true, // Always true with reassignment
             'warnings' => [
                 'consolidator_dependents' => $consolidatorCount,
                 'g12_dependents' => $g12Count,
                 'requires_reassignment' => $consolidatorCount > 0 || $g12Count > 0,
             ],
             'message' => $consolidatorCount > 0 || $g12Count > 0 
-                ? "This member has dependents that will need reassignment."
-                : "This member can be deleted safely."
+                ? "This member has dependents that will need reassignment. This deletion is PERMANENT and cannot be undone."
+                : "This member can be deleted safely. This deletion is PERMANENT and cannot be undone."
         ];
     }
 }

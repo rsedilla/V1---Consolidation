@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CellGroups\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -66,10 +67,21 @@ class CellGroupsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->modalHeading('Delete Cell Group Record')
+                    ->modalDescription('Are you sure you want to permanently delete this cell group record? This action cannot be undone and will remove all session data.')
+                    ->modalSubmitActionLabel('Yes, Delete Permanently')
+                    ->color('danger'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->requiresConfirmation()
+                        ->modalHeading('Delete Selected Cell Group Records')
+                        ->modalDescription('Are you sure you want to permanently delete the selected cell group records? This action cannot be undone and will remove all session data.')
+                        ->modalSubmitActionLabel('Yes, Delete Permanently')
+                        ->color('danger'),
                 ]),
             ]);
     }
