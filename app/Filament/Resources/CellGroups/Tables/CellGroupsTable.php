@@ -25,6 +25,18 @@ class CellGroupsTable
                     })
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('consolidator_name')
+                    ->label('Consolidator')
+                    ->getStateUsing(function ($record) {
+                        if ($record->member && $record->member->consolidator) {
+                            return $record->member->consolidator->first_name . ' ' . $record->member->consolidator->last_name;
+                        }
+                        return 'N/A';
+                    })
+                    ->placeholder('N/A')
+                    ->searchable(false)
+                    ->sortable(false),
                 
                 // Individual Cell Group Session Columns (C1-C4)
                 TextColumn::make('cell_group_1_date')

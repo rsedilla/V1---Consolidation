@@ -34,13 +34,16 @@ class SundayServiceResource extends Resource
     {
         $user = Auth::user();
         
+        // Eager load the member and consolidator relationships to optimize database queries
+        $query = parent::getEloquentQuery()->with(['member', 'member.consolidator']);
+        
         if ($user instanceof User && $user->canAccessLeaderData()) {
             // Leaders see only records for their assigned members
-            return parent::getEloquentQuery()->forG12Leader($user->getG12LeaderId());
+            return $query->forG12Leader($user->getG12LeaderId());
         }
         
         // Admins see everything, other users see nothing
-        return parent::getEloquentQuery();
+        return $query;
     }
 
     public static function form(Schema $schema): Schema

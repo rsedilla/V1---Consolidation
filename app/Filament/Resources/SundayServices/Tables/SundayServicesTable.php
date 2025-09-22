@@ -25,6 +25,18 @@ class SundayServicesTable
                     })
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('consolidator_name')
+                    ->label('Consolidator')
+                    ->getStateUsing(function ($record) {
+                        if ($record->member && $record->member->consolidator) {
+                            return $record->member->consolidator->first_name . ' ' . $record->member->consolidator->last_name;
+                        }
+                        return 'N/A';
+                    })
+                    ->placeholder('N/A')
+                    ->searchable(false)
+                    ->sortable(false),
                 
                 // Individual Sunday Service Session Columns (S1-S4)
                 TextColumn::make('sunday_service_1_date')

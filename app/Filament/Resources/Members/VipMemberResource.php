@@ -61,6 +61,9 @@ class VipMemberResource extends Resource
     {
         $query = parent::getEloquentQuery();
         
+        // Eager load relationships for better performance
+        $query->with(['memberType', 'status', 'g12Leader', 'consolidator', 'vipStatus']);
+        
         // Filter to VIP members only
         $query->whereHas('memberType', function (Builder $query) {
             $query->where('name', 'VIP');
