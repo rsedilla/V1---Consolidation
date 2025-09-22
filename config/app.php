@@ -69,6 +69,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin Email Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This email address will receive notifications for critical system events
+    | such as member deletions, data changes, and security alerts.
+    |
+    */
+
+    'admin_email' => env('ADMIN_EMAIL', 'admin@church.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |
