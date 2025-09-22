@@ -5,8 +5,8 @@ namespace App\Filament\Resources\Members;
 use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\CreateConsolidatorMember;
 use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\EditConsolidatorMember;
 use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\ListConsolidatorMembers;
-use App\Filament\Resources\Members\Schemas\MemberForm;
-use App\Filament\Resources\Members\Tables\MembersTable;
+use App\Filament\Resources\Members\Schemas\ConsolidatorMemberForm;
+use App\Filament\Resources\Members\Tables\ConsolidatorMembersTable;
 use App\Models\Member;
 use App\Models\User;
 use BackedEnum;
@@ -33,12 +33,12 @@ class ConsolidatorMemberResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return MemberForm::configure($schema);
+        return ConsolidatorMemberForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return MembersTable::configure($table);
+        return ConsolidatorMembersTable::configure($table);
     }
 
     public static function getRelations(): array
