@@ -23,9 +23,9 @@ class MemberResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'Members';
+    protected static ?string $navigationLabel = 'Member - All';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     /**
      * Filter records based on user role and G12 leader assignment
