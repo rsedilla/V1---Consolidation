@@ -103,4 +103,39 @@ class Member extends Model
     {
         return \App\Services\MemberCompletionService::getCompletionProgress($this);
     }
+
+    /**
+     * Check if a member with the same name exists (excluding soft deleted)
+     * This is useful for validation before creating new members
+     */
+    public static function nameExists($firstName, $lastName, $excludeId = null): bool
+    {
+        $query = static::where('first_name', $firstName)
+                      ->where('last_name', $lastName);
+        
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        
+        return $query->exists();
+    }
+
+    /**
+     * Restore a soft deleted member by name
+     * Useful when trying to "create" a member that was previously soft deleted
+     */
+    public static function restoreByName($firstName, $lastName): ?self
+    {
+        $member = static::onlyTrashed()
+                       ->where('first_name', $firstName)
+                       ->where('last_name', $lastName)
+                       ->first();
+        
+        if ($member) {
+            $member->restore();
+            return $member->fresh();
+        }
+        
+        return null;
+    }
 }
