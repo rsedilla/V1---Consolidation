@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\SecureQueryTrait;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SecureQueryTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -199,8 +200,8 @@ class User extends Authenticatable
             return Member::whereIn('g12_leader_id', $visibleLeaderIds);
         }
 
-        // Other users cannot see any members
-        return Member::whereRaw('1 = 0'); // Empty query
+        // Other users cannot see any members - return empty query safely
+        return Member::where('id', '=', 0); // Safe empty query using proper where clause
     }
 
     /**

@@ -63,6 +63,12 @@ return new class extends Migration
      */
     private function indexExists(string $table, string $indexName): bool
     {
+        // Validate table name to prevent SQL injection
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $table)) {
+            throw new InvalidArgumentException('Invalid table name');
+        }
+        
+        // Use parameterized query for index name, table name is validated above
         $indexes = DB::select("SHOW INDEX FROM `{$table}` WHERE Key_name = ?", [$indexName]);
         return !empty($indexes);
     }

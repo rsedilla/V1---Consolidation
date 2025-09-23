@@ -11,7 +11,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Add security middleware to web routes
+        $middleware->web(append: [
+            \App\Http\Middleware\SecurityMiddleware::class,
+            \App\Http\Middleware\StrongAuthenticationMiddleware::class,
+        ]);
+        
+        // Ensure CSRF protection is enabled for all web routes
+        $middleware->validateCsrfTokens(except: [
+            // Add any routes that should be exempt from CSRF protection
+        ]);
+        
+        // Add rate limiting for API routes
+        $middleware->api(prepend: [
+            'throttle:60,1', // 60 requests per minute
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
