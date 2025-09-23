@@ -16,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 
 class ConsolidatorMemberResource extends Resource
 {
@@ -79,6 +80,64 @@ class ConsolidatorMemberResource extends Resource
         }
 
         return $query;
+    }
+
+    /**
+     * Configure global search for Consolidator members
+     */
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return static::getEloquentQuery()
+            ->with(['memberType', 'status', 'g12Leader']);
+    }
+
+    /**
+     * Define searchable attributes for global search
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'first_name',
+            'last_name', 
+            'email',
+            'phone',
+            'address',
+            'memberType.name',
+            'status.name',
+            'g12Leader.name',
+        ];
+    }
+
+    /**
+     * Configure global search result title
+     */
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return "{$record->first_name} {$record->last_name}";
+    }
+
+    /**
+     * Configure global search result details
+     */
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        $details = [];
+        
+        if ($record->email) {
+            $details[] = "Email: {$record->email}";
+        }
+        
+        if ($record->phone) {
+            $details[] = "Phone: {$record->phone}";
+        }
+        
+        if ($record->g12Leader) {
+            $details[] = "G12 Leader: {$record->g12Leader->name}";
+        }
+        
+        $details[] = "Role: Consolidator";
+
+        return $details;
     }
 
     public static function canCreate(): bool

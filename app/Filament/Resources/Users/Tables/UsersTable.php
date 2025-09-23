@@ -18,10 +18,10 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable(['name']),
                 TextColumn::make('email')
                     ->label('Email address')
-                    ->searchable(),
+                    ->searchable(['email']),
                 TextColumn::make('role')
                     ->label('Role')
                     ->formatStateUsing(fn (string $state): string => match ($state) {
@@ -40,7 +40,7 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
-                    ->searchable()
+                    ->searchable(['g12Leader.name'])
                     ->sortable()
                     ->placeholder('Not assigned')
                     ->badge()

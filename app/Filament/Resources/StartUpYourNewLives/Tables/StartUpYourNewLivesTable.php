@@ -18,7 +18,7 @@ class StartUpYourNewLivesTable
                 TextColumn::make('member.first_name')
                     ->label('Member')
                     ->formatStateUsing(fn ($record) => $record->member->first_name . ' ' . $record->member->last_name)
-                    ->searchable(['first_name', 'last_name'])
+                    ->searchable(['member.first_name', 'member.last_name'])
                     ->sortable(),
 
                 TextColumn::make('consolidator_name')

@@ -17,20 +17,23 @@ class MembersTable
             ->columns([
                 TextColumn::make('first_name')
                     ->label('First Name')
-                    ->searchable()
+                    ->searchable(['first_name'])
                     ->sortable(),
                 TextColumn::make('last_name')
                     ->label('Last Name')
-                    ->searchable()
+                    ->searchable(['last_name'])
                     ->sortable(),
                 TextColumn::make('memberType.name')
                     ->label('Member Type')
+                    ->searchable(['memberType.name'])
                     ->sortable(),
                 TextColumn::make('status.name')
                     ->label('Status')
+                    ->searchable(['status.name'])
                     ->sortable(),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
+                    ->searchable(['g12Leader.name'])
                     ->sortable(),
                 TextColumn::make('consolidator.first_name')
                     ->label('Consolidator')
@@ -41,7 +44,7 @@ class MembersTable
                         return 'N/A';
                     })
                     ->placeholder('N/A')
-                    ->searchable()
+                    ->searchable(['consolidator.first_name', 'consolidator.last_name'])
                     ->sortable(),
                 TextColumn::make('vipStatus.name')
                     ->label('VIP Status')
