@@ -1,4 +1,17 @@
-# Laravel V2-Consolidation - Ubuntu Deployment Guide
+# Laravel V2-Consolidation - Production Deployment Guide
+
+## 🎉 Latest Updates (Branch Merged to Main)
+
+**✅ Development Complete**: All features from `06-New-Resource` branch have been successfully merged to `main`
+
+### What's New in This Release:
+- **Dashboard Optimizations**: Fixed VIP lesson completion and attendance metrics with accurate AND logic
+- **G12 Leaders Management**: Complete frontend admin interface with security restrictions
+- **Performance Enhancements**: Comprehensive caching, query optimization, and monitoring
+- **Production Ready**: Security configurations, deployment scripts, and server setup guides
+- **Server Configuration**: Ready-to-use Nginx configuration for Hostinger srv1026176.hstgr.cloud
+
+---
 
 ## 🖥️ Server Requirements
 
@@ -6,7 +19,8 @@
 - **OS**: Ubuntu 20.04 LTS or 22.04 LTS (recommended)
 - **RAM**: Minimum 1GB, recommended 2GB+
 - **Storage**: Minimum 10GB free space
-- **PHP**: 8.1+ (your app uses 8.3)
+- **PHP**: 8.3 (configured and tested)
+- **Target Server**: Hostinger VPS srv1026176.hstgr.cloud (72.60.198.8)
 
 ---
 
@@ -149,14 +163,13 @@ sudo systemctl reload nginx
 sudo mkdir -p /var/www/v2-consolidation
 sudo chown -R $USER:www-data /var/www/v2-consolidation
 
-# Clone or upload your repository
+# Clone your repository (main branch is now ready for production)
 cd /var/www
-# Option 1: If using Git
 git clone https://github.com/rsedilla/V1---Consolidation.git v2-consolidation
 cd v2-consolidation
-git checkout 06-New-Resource
 
-# Option 2: If uploading files, use SCP/SFTP to upload your project files
+# The main branch now contains all features - no need to checkout other branches
+git checkout main
 
 # Install dependencies
 composer install --optimize-autoloader --no-dev
@@ -166,6 +179,10 @@ sudo chown -R www-data:www-data /var/www/v2-consolidation
 sudo chmod -R 755 /var/www/v2-consolidation
 sudo chmod -R 775 /var/www/v2-consolidation/storage
 sudo chmod -R 775 /var/www/v2-consolidation/bootstrap/cache
+
+# Make deployment script executable
+chmod +x deploy.sh
+chmod +x optimize.sh
 ```
 
 ### 7. Configure Environment
@@ -212,6 +229,10 @@ MAIL_ENCRYPTION=tls
 ```
 
 ```bash
+# Use the automated deployment script (recommended)
+./deploy.sh
+
+# OR run commands manually:
 # Generate application key
 php artisan key:generate
 
@@ -223,6 +244,9 @@ php artisan view:cache
 # Run migrations and seeders
 php artisan migrate --force
 php artisan db:seed --force
+
+# Optimize for production
+./optimize.sh
 ```
 
 ### 8. Install SSL Certificate (Let's Encrypt)
@@ -286,24 +310,28 @@ sudo supervisorctl start laravel-worker:*
 ## 🔧 Post-Deployment Checklist
 
 ### Essential Checks
-- [ ] Application loads at your domain
+- [ ] Application loads at srv1026176.hstgr.cloud or your domain
 - [ ] Admin panel accessible at `/admin`
 - [ ] Database connections working
+- [ ] G12 Leaders resource visible to admins only ✅ **(Implemented)**
+- [ ] Dashboard shows accurate VIP completion metrics ✅ **(Fixed)**
 - [ ] File permissions correct
-- [ ] SSL certificate installed
+- [ ] SSL certificate installed (Let's Encrypt)
 - [ ] Email sending functional
-- [ ] G12 Leaders resource visible to admins only
 
-### Performance Optimization
+### Performance Optimization ✅ **(All Implemented)**
 - [ ] PHP OPcache enabled
-- [ ] Laravel caching configured
-- [ ] Database indexes optimized
-- [ ] Static assets compressed
+- [ ] Laravel caching configured with CacheService
+- [ ] Database indexes optimized with performance migration
+- [ ] Static assets compressed with Vite optimization
+- [ ] Performance monitoring enabled
 
-### Security Verification
+### Security Verification ✅ **(Enhanced)**
 - [ ] Debug mode disabled (`APP_DEBUG=false`)
 - [ ] Strong passwords used
-- [ ] Firewall configured
+- [ ] Firewall configured (UFW)
+- [ ] Security headers configured in Nginx
+- [ ] Rate limiting implemented
 - [ ] Regular backups scheduled
 - [ ] Error logging configured
 
@@ -338,11 +366,72 @@ php artisan tinker
 
 ---
 
+## 🤖 Automated Deployment Scripts
+
+Your project now includes automated scripts to simplify deployment:
+
+### `deploy.sh` - Complete Deployment Automation
+```bash
+# Run this after uploading your files to the server
+./deploy.sh
+```
+**What it does:**
+- Installs Composer dependencies
+- Generates application key
+- Runs migrations and seeders (with confirmation)
+- Optimizes application caches
+- Sets proper file permissions
+- Creates storage symlink
+- Validates configuration
+
+### `optimize.sh` - Production Optimization
+```bash
+# Run this to optimize your app for maximum performance
+./optimize.sh
+```
+**What it does:**
+- Clears all caches
+- Optimizes Composer autoloader
+- Caches configurations, routes, views, and events
+- Creates OPcache configuration recommendations
+- Provides additional optimization tips
+
+### Server Configuration Files
+- **`nginx-config.conf`**: Ready-to-use Nginx configuration for srv1026176.hstgr.cloud
+- **`DATABASE-SETUP.md`**: Complete database setup guide
+- **`SECURITY-GUIDE.md`**: Security configuration checklist
+- **`PERFORMANCE_OPTIMIZATION.md`**: Detailed performance optimizations implemented
+
+---
+
+## 📊 Performance Monitoring
+
+Your application now includes built-in performance monitoring:
+
+```bash
+# Analyze application performance
+php artisan performance:analyze
+
+# Warm up application cache
+php artisan cache:warm-up
+```
+
+Performance metrics are automatically logged and cached for dashboard display.
+
+---
+
 ## 📞 Support
 
 If you encounter issues during deployment, check:
-1. Laravel logs: `storage/logs/laravel.log`
-2. Nginx logs: `/var/log/nginx/error.log`
-3. PHP-FPM logs: `/var/log/php8.3-fpm.log`
+1. **Laravel logs**: `storage/logs/laravel.log`
+2. **Nginx logs**: `/var/log/nginx/error.log`
+3. **PHP-FPM logs**: `/var/log/php8.3-fpm.log`
+4. **Performance logs**: Check for slow queries and memory issues
+5. **Security logs**: Monitor for unauthorized access attempts
 
-Remember to replace `your-domain.com` with your actual domain name throughout this guide.
+### Quick Server Access
+- **Server**: srv1026176.hstgr.cloud
+- **IP**: 72.60.198.8
+- **SSH**: Use your Hostinger credentials
+
+Remember: The main branch is now production-ready with all optimizations and security enhancements!
