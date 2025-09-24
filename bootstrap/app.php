@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SecurityMiddleware::class,
             \App\Http\Middleware\StrongAuthenticationMiddleware::class,
+            \App\Http\Middleware\OptimizeAssets::class,
+            \App\Http\Middleware\PerformanceMonitoring::class,
         ]);
         
         // Ensure CSRF protection is enabled for all web routes

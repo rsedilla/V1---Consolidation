@@ -106,7 +106,12 @@ class User extends Authenticatable
      */
     public function leaderMembers()
     {
-        return $this->hasManyThrough(Member::class, G12Leader::class, 'user_id', 'g12_leader_id');
+        return $this->hasManyThrough(
+            Member::class,
+            G12Leader::class,
+            'user_id',
+            'g12_leader_id'
+        );
     }
 
     /**
@@ -132,21 +137,37 @@ class User extends Authenticatable
     public function getAvailableG12Leaders(): array
     {
         if ($this->isAdmin()) {
-            // Admins can assign any G12 leader
-            return G12Leader::orderBy('name')->pluck('name', 'id')->toArray();
+            return $this->getAllG12Leaders();
         }
         
         if ($this->leaderRecord) {
-            // Leaders can only assign from their hierarchy (themselves + descendants)
-            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
-            return G12Leader::whereIn('id', $visibleLeaderIds)
-                ->orderBy('name')
-                ->pluck('name', 'id')
-                ->toArray();
+            return $this->getHierarchyG12Leaders();
         }
 
-        // Other users cannot assign G12 leaders
         return [];
+    }
+
+    /**
+     * Get all G12 leaders for admin users
+     */
+    private function getAllG12Leaders(): array
+    {
+        return G12Leader::orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    /**
+     * Get G12 leaders from user's hierarchy
+     */
+    private function getHierarchyG12Leaders(): array
+    {
+        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        
+        return G12Leader::whereIn('id', $visibleLeaderIds)
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
     }
 
     /**
@@ -156,32 +177,53 @@ class User extends Authenticatable
     public function getAvailableConsolidators(): array
     {
         if ($this->isAdmin()) {
-            // Admins can see all consolidators
-            return Member::consolidators()
-                ->orderBy('first_name')
-                ->get()
-                ->mapWithKeys(function ($member) {
-                    return [$member->id => $member->first_name . ' ' . $member->last_name];
-                })
-                ->toArray();
+            return $this->getAllConsolidators();
         }
         
         if ($this->leaderRecord) {
-            // Leaders see consolidators in their entire hierarchy (including descendants)
-            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
-            
-            $consolidatorsInHierarchy = Member::consolidators()
-                ->whereIn('g12_leader_id', $visibleLeaderIds)
-                ->orderBy('first_name')
-                ->get();
-            
-            return $consolidatorsInHierarchy->mapWithKeys(function ($member) {
-                return [$member->id => $member->first_name . ' ' . $member->last_name];
-            })->toArray();
+            return $this->getHierarchyConsolidators();
         }
 
-        // Other users cannot see consolidators
         return [];
+    }
+
+    /**
+     * Get all consolidators for admin users
+     */
+    private function getAllConsolidators(): array
+    {
+        return Member::consolidators()
+            ->orderBy('first_name')
+            ->get()
+            ->mapWithKeys(function ($member) {
+                return [$member->id => $this->formatMemberName($member)];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get consolidators from user's hierarchy
+     */
+    private function getHierarchyConsolidators(): array
+    {
+        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        
+        $consolidators = Member::consolidators()
+            ->whereIn('g12_leader_id', $visibleLeaderIds)
+            ->orderBy('first_name')
+            ->get();
+        
+        return $consolidators->mapWithKeys(function ($member) {
+            return [$member->id => $this->formatMemberName($member)];
+        })->toArray();
+    }
+
+    /**
+     * Format member name for display
+     */
+    private function formatMemberName(Member $member): string
+    {
+        return $member->first_name . ' ' . $member->last_name;
     }
 
     /**
@@ -190,18 +232,31 @@ class User extends Authenticatable
     public function getVisibleMembers()
     {
         if ($this->isAdmin()) {
-            // Admins can see all members
             return Member::query();
         }
         
         if ($this->leaderRecord) {
-            // Leaders can see members in their entire hierarchy
-            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
-            return Member::whereIn('g12_leader_id', $visibleLeaderIds);
+            return $this->getHierarchyMembers();
         }
 
-        // Other users cannot see any members - return empty query safely
-        return Member::where('id', '=', 0); // Safe empty query using proper where clause
+        return $this->getEmptyMemberQuery();
+    }
+
+    /**
+     * Get members from user's hierarchy
+     */
+    private function getHierarchyMembers()
+    {
+        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        return Member::whereIn('g12_leader_id', $visibleLeaderIds);
+    }
+
+    /**
+     * Get empty member query safely
+     */
+    private function getEmptyMemberQuery()
+    {
+        return Member::where('id', '=', 0);
     }
 
     /**
@@ -214,11 +269,19 @@ class User extends Authenticatable
         }
         
         if ($this->leaderRecord) {
-            $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
-            return in_array($member->g12_leader_id, $visibleLeaderIds);
+            return $this->isMemberInHierarchy($member);
         }
 
         return false;
+    }
+
+    /**
+     * Check if member is in user's hierarchy
+     */
+    private function isMemberInHierarchy(Member $member): bool
+    {
+        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        return in_array($member->g12_leader_id, $visibleLeaderIds);
     }
 
     /**

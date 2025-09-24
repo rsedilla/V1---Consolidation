@@ -10,6 +10,8 @@ class ListStartUpYourNewLives extends ListRecords
 {
     protected static string $resource = StartUpYourNewLifeResource::class;
 
+    protected static ?string $title = 'Start Up Your New Life List';
+
     protected function getHeaderActions(): array
     {
         return [

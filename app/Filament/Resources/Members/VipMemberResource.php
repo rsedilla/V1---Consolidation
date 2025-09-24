@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use App\Services\CacheService;
 
 class VipMemberResource extends Resource
 {
@@ -62,8 +63,8 @@ class VipMemberResource extends Resource
     {
         $query = parent::getEloquentQuery();
         
-        // Eager load relationships for better performance
-        $query->with(['memberType', 'status', 'g12Leader', 'consolidator', 'vipStatus']);
+        // Use optimized eager loading
+        $query->forListing();
         
         // Filter to VIP members only
         $query->whereHas('memberType', function (Builder $query) {

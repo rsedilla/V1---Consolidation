@@ -8,6 +8,7 @@ use App\Models\G12Leader;
 use App\Models\Member;
 use App\Models\User;
 use App\Models\VipStatus;
+use App\Services\CacheService;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
@@ -51,11 +52,11 @@ class MemberForm
                     ->rows(3),
                 Select::make('member_type_id')
                     ->label('Member Type')
-                    ->options(MemberType::all()->pluck('name', 'id'))
+                    ->options(CacheService::getMemberTypes())
                     ->required(),
                 Select::make('status_id')
                     ->label('Status')
-                    ->options(Status::all()->pluck('name', 'id'))
+                    ->options(CacheService::getStatuses())
                     ->placeholder('Select status')
                     ->required(),
                 Select::make('g12_leader_id')
@@ -71,7 +72,7 @@ class MemberForm
                     ->placeholder($user instanceof User && $user->isLeader() ? 'Select from your consolidators' : 'Select consolidator for VIP members'),
                 Select::make('vip_status_id')
                     ->label('VIP Status')
-                    ->options(VipStatus::orderBy('name')->pluck('name', 'id'))
+                    ->options(CacheService::getVipStatuses())
                     ->placeholder('Select VIP status')
                     ->searchable(),
             ]);

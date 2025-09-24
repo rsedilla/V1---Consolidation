@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\OptimizedQueries;
 
 class Member extends Model
 {
+    use OptimizedQueries;
+
     protected $fillable = [
         'first_name',
         'middle_name',

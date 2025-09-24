@@ -38,29 +38,46 @@ class StatsOverview extends StatsOverviewWidget
                     ->color('info'),
                 
                 Stat::make('Completed Lessons', StartUpYourNewLife::forG12Leader($g12LeaderId)
+                    ->whereHas('member', function($query) {
+                        $query->whereHas('memberType', function($subQuery) {
+                            $subQuery->where('name', 'VIP');
+                        });
+                    })
                     ->where(function($query) {
                         $query->whereNotNull('lesson_1_completion_date')
-                            ->orWhereNotNull('lesson_2_completion_date')
-                            ->orWhereNotNull('lesson_3_completion_date')
-                            ->orWhereNotNull('lesson_4_completion_date')
-                            ->orWhereNotNull('lesson_5_completion_date')
-                            ->orWhereNotNull('lesson_6_completion_date')
-                            ->orWhereNotNull('lesson_7_completion_date')
-                            ->orWhereNotNull('lesson_8_completion_date')
-                            ->orWhereNotNull('lesson_9_completion_date')
-                            ->orWhereNotNull('lesson_10_completion_date');
+                            ->whereNotNull('lesson_2_completion_date')
+                            ->whereNotNull('lesson_3_completion_date')
+                            ->whereNotNull('lesson_4_completion_date')
+                            ->whereNotNull('lesson_5_completion_date')
+                            ->whereNotNull('lesson_6_completion_date')
+                            ->whereNotNull('lesson_7_completion_date')
+                            ->whereNotNull('lesson_8_completion_date')
+                            ->whereNotNull('lesson_9_completion_date')
+                            ->whereNotNull('lesson_10_completion_date');
                     })->count())
-                    ->description('SUYNL lessons completed by my members')
+                    ->description('VIP members who completed ALL SUYNL lessons (1-10)')
                     ->descriptionIcon('heroicon-o-academic-cap')
                     ->color('warning'),
                 
-                Stat::make('Sunday Services', SundayService::forG12Leader($g12LeaderId)->count())
-                    ->description('Attendances by my members')
+                Stat::make('Sunday Services', SundayService::forG12Leader($g12LeaderId)
+                    ->where(function($query) {
+                        $query->whereNotNull('sunday_service_1_date')
+                            ->whereNotNull('sunday_service_2_date')
+                            ->whereNotNull('sunday_service_3_date')
+                            ->whereNotNull('sunday_service_4_date');
+                    })->count())
+                    ->description('Members who completed ALL 4 Sunday services')
                     ->descriptionIcon('heroicon-o-building-library')
                     ->color('primary'),
                 
-                Stat::make('Cell Groups', CellGroup::forG12Leader($g12LeaderId)->count())
-                    ->description('Attendances by my members')
+                Stat::make('Cell Groups', CellGroup::forG12Leader($g12LeaderId)
+                    ->where(function($query) {
+                        $query->whereNotNull('cell_group_1_date')
+                            ->whereNotNull('cell_group_2_date')
+                            ->whereNotNull('cell_group_3_date')
+                            ->whereNotNull('cell_group_4_date');
+                    })->count())
+                    ->description('Members who completed ALL 4 cell group sessions')
                     ->descriptionIcon('heroicon-o-user-group')
                     ->color('success'),
                 
@@ -87,29 +104,43 @@ class StatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-users')
                 ->color('info'),
             
-            Stat::make('Completed Lessons', StartUpYourNewLife::where(function($query) {
+            Stat::make('Completed Lessons', StartUpYourNewLife::whereHas('member', function($query) {
+                $query->whereHas('memberType', function($subQuery) {
+                    $subQuery->where('name', 'VIP');
+                });
+            })->where(function($query) {
                 $query->whereNotNull('lesson_1_completion_date')
-                    ->orWhereNotNull('lesson_2_completion_date')
-                    ->orWhereNotNull('lesson_3_completion_date')
-                    ->orWhereNotNull('lesson_4_completion_date')
-                    ->orWhereNotNull('lesson_5_completion_date')
-                    ->orWhereNotNull('lesson_6_completion_date')
-                    ->orWhereNotNull('lesson_7_completion_date')
-                    ->orWhereNotNull('lesson_8_completion_date')
-                    ->orWhereNotNull('lesson_9_completion_date')
-                    ->orWhereNotNull('lesson_10_completion_date');
+                    ->whereNotNull('lesson_2_completion_date')
+                    ->whereNotNull('lesson_3_completion_date')
+                    ->whereNotNull('lesson_4_completion_date')
+                    ->whereNotNull('lesson_5_completion_date')
+                    ->whereNotNull('lesson_6_completion_date')
+                    ->whereNotNull('lesson_7_completion_date')
+                    ->whereNotNull('lesson_8_completion_date')
+                    ->whereNotNull('lesson_9_completion_date')
+                    ->whereNotNull('lesson_10_completion_date');
             })->count())
-                ->description('SUYNL lessons completed')
+                ->description('VIP members who completed ALL SUYNL lessons (1-10)')
                 ->descriptionIcon('heroicon-o-academic-cap')
                 ->color('warning'),
             
-            Stat::make('Sunday Services', SundayService::count())
-                ->description('Total attendances')
+            Stat::make('Sunday Services', SundayService::where(function($query) {
+                $query->whereNotNull('sunday_service_1_date')
+                    ->whereNotNull('sunday_service_2_date')
+                    ->whereNotNull('sunday_service_3_date')
+                    ->whereNotNull('sunday_service_4_date');
+            })->count())
+                ->description('Members who completed ALL 4 Sunday services')
                 ->descriptionIcon('heroicon-o-building-library')
                 ->color('primary'),
             
-            Stat::make('Cell Groups', CellGroup::count())
-                ->description('Total attendances')
+            Stat::make('Cell Groups', CellGroup::where(function($query) {
+                $query->whereNotNull('cell_group_1_date')
+                    ->whereNotNull('cell_group_2_date')
+                    ->whereNotNull('cell_group_3_date')
+                    ->whereNotNull('cell_group_4_date');
+            })->count())
+                ->description('Members who completed ALL 4 cell group sessions')
                 ->descriptionIcon('heroicon-o-user-group')
                 ->color('success'),
             

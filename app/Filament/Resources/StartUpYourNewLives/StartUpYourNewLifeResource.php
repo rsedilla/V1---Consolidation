@@ -28,6 +28,14 @@ class StartUpYourNewLifeResource extends Resource
     protected static ?int $navigationSort = 3;
 
     /**
+     * Override the plural model label (used for page titles)
+     */
+    public static function getPluralModelLabel(): string
+    {
+        return 'Start Up Your New Life';
+    }
+
+    /**
      * Filter records based on user role and G12 leader assignment
      */
     public static function getEloquentQuery(): Builder

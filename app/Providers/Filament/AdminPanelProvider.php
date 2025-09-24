@@ -31,6 +31,9 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->userMenuItems([
+                // Empty array to remove all user menu items
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -39,8 +42,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 \App\Livewire\StatsOverview::class,
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // AccountWidget::class, // Removed - shows user avatar and welcome message
+                // FilamentInfoWidget::class, // Removed - shows version and links
             ])
             ->middleware([
                 EncryptCookies::class,
