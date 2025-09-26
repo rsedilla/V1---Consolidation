@@ -73,11 +73,10 @@ class ConsolidatorMemberResource extends Resource
 
         // Apply G12 leader filtering if user is a leader
         $user = Auth::user();
-        if ($user instanceof User && $user->canAccessLeaderData()) {
-            $g12LeaderId = $user->getG12LeaderId();
-            if ($g12LeaderId) {
-                $query->where('g12_leader_id', $g12LeaderId);
-            }
+        if ($user instanceof User && $user->leaderRecord) {
+            // Get all leader IDs in this user's hierarchy (including themselves and descendants)
+            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
+            $query->whereIn('g12_leader_id', $visibleLeaderIds);
         }
 
         return $query;
@@ -150,11 +149,9 @@ class ConsolidatorMemberResource extends Resource
     {
         $user = Auth::user();
         
-        if ($user instanceof User && $user->canAccessLeaderData()) {
-            $g12LeaderId = $user->getG12LeaderId();
-            if ($g12LeaderId) {
-                return static::getEloquentQuery()->count();
-            }
+        if ($user instanceof User && $user->leaderRecord) {
+            // Use the same hierarchy filtering logic as the main query
+            return static::getEloquentQuery()->count();
         }
         
         // For admin users, show total Consolidator count

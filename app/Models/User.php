@@ -203,6 +203,7 @@ class User extends Authenticatable
 
     /**
      * Get consolidators from user's hierarchy
+     * Excludes the logged-in user from appearing in their own consolidator search options
      */
     private function getHierarchyConsolidators(): array
     {
@@ -212,10 +213,41 @@ class User extends Authenticatable
             ->whereIn('g12_leader_id', $visibleLeaderIds)
             ->orderBy('first_name')
             ->get();
-        
+
         return $consolidators->mapWithKeys(function ($member) {
+            // Exclude self from search options - users cannot see themselves in consolidator dropdown
+            if ($this->isLeader() && $this->isSamePerson($member)) {
+                return []; // Skip this member (self) - won't appear in consolidator search field
+            }
+            
             return [$member->id => $this->formatMemberName($member)];
         })->toArray();
+    }
+
+    /**
+     * Check if a member represents the same person as the logged-in user
+     * Used to exclude the user from seeing themselves in consolidator search options
+     */
+    private function isSamePerson(Member $member): bool
+    {
+        // Primary check: exact email match
+        if (!empty($member->email) && !empty($this->email) && $member->email === $this->email) {
+            return true;
+        }
+        
+        // Fallback check: name matching (useful when emails differ but it's the same person)
+        $userFirstName = strtolower(trim($this->first_name ?? ''));
+        $userLastName = strtolower(trim($this->last_name ?? ''));
+        $memberFirstName = strtolower(trim($member->first_name ?? ''));
+        $memberLastName = strtolower(trim($member->last_name ?? ''));
+        
+        // If we have both first and last names, check if they match
+        if (!empty($userFirstName) && !empty($userLastName) && 
+            !empty($memberFirstName) && !empty($memberLastName)) {
+            return $userFirstName === $memberFirstName && $userLastName === $memberLastName;
+        }
+        
+        return false;
     }
 
     /**

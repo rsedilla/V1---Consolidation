@@ -35,9 +35,9 @@ class MembersTable
                     ->label('G12 Leader')
                     ->searchable(['g12Leader.name'])
                     ->sortable(),
-                TextColumn::make('consolidator.first_name')
+                TextColumn::make('consolidator_name')
                     ->label('Consolidator')
-                    ->formatStateUsing(function ($record) {
+                    ->getStateUsing(function ($record) {
                         if ($record->consolidator) {
                             return $record->consolidator->first_name . ' ' . $record->consolidator->last_name;
                         }
@@ -45,7 +45,11 @@ class MembersTable
                     })
                     ->placeholder('N/A')
                     ->searchable(['consolidator.first_name', 'consolidator.last_name'])
-                    ->sortable(),
+                    ->sortable(query: function ($query, $direction) {
+                        return $query->leftJoin('members as consolidators', 'members.consolidator_id', '=', 'consolidators.id')
+                            ->orderBy('consolidators.first_name', $direction)
+                            ->orderBy('consolidators.last_name', $direction);
+                    }),
                 TextColumn::make('vipStatus.name')
                     ->label('VIP Status')
                     ->badge()

@@ -18,30 +18,30 @@ class StatsOverview extends StatsOverviewWidget
     {
         $user = Auth::user();
         
-        // If user is a leader with G12 assignment, filter all stats by their G12 leader
-        if ($user instanceof User && $user->canAccessLeaderData()) {
-            $g12LeaderId = $user->getG12LeaderId();
+        // If user is a leader with G12 assignment, filter all stats by their hierarchy
+        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
             
             return [
-                Stat::make('My VIPs', Member::forG12Leader($g12LeaderId)->whereHas('memberType', function($query) {
+                Stat::make('My VIPs', Member::whereIn('g12_leader_id', $visibleLeaderIds)->whereHas('memberType', function($query) {
                     $query->where('name', 'VIP');
                 })->count())
                     ->description('VIP members under my leadership')
                     ->descriptionIcon('heroicon-o-user-group')
                     ->color('success'),
                 
-                Stat::make('My Consolidators', Member::forG12Leader($g12LeaderId)->whereHas('memberType', function($query) {
+                Stat::make('My Consolidators', Member::whereIn('g12_leader_id', $visibleLeaderIds)->whereHas('memberType', function($query) {
                     $query->where('name', 'Consolidator');
                 })->count())
                     ->description('Consolidators under my leadership')
                     ->descriptionIcon('heroicon-o-users')
                     ->color('info'),
                 
-                Stat::make('Completed Lessons', StartUpYourNewLife::forG12Leader($g12LeaderId)
-                    ->whereHas('member', function($query) {
-                        $query->whereHas('memberType', function($subQuery) {
-                            $subQuery->where('name', 'VIP');
-                        });
+                Stat::make('Completed Lessons', StartUpYourNewLife::whereHas('member', function($query) use ($visibleLeaderIds) {
+                        $query->whereIn('g12_leader_id', $visibleLeaderIds)
+                            ->whereHas('memberType', function($subQuery) {
+                                $subQuery->where('name', 'VIP');
+                            });
                     })
                     ->where(function($query) {
                         $query->whereNotNull('lesson_1_completion_date')
@@ -59,8 +59,9 @@ class StatsOverview extends StatsOverviewWidget
                     ->descriptionIcon('heroicon-o-academic-cap')
                     ->color('warning'),
                 
-                Stat::make('Sunday Services', SundayService::forG12Leader($g12LeaderId)
-                    ->where(function($query) {
+                Stat::make('Sunday Services', SundayService::whereHas('member', function($query) use ($visibleLeaderIds) {
+                        $query->whereIn('g12_leader_id', $visibleLeaderIds);
+                    })->where(function($query) {
                         $query->whereNotNull('sunday_service_1_date')
                             ->whereNotNull('sunday_service_2_date')
                             ->whereNotNull('sunday_service_3_date')
@@ -70,8 +71,9 @@ class StatsOverview extends StatsOverviewWidget
                     ->descriptionIcon('heroicon-o-building-library')
                     ->color('primary'),
                 
-                Stat::make('Cell Groups', CellGroup::forG12Leader($g12LeaderId)
-                    ->where(function($query) {
+                Stat::make('Cell Groups', CellGroup::whereHas('member', function($query) use ($visibleLeaderIds) {
+                        $query->whereIn('g12_leader_id', $visibleLeaderIds);
+                    })->where(function($query) {
                         $query->whereNotNull('cell_group_1_date')
                             ->whereNotNull('cell_group_2_date')
                             ->whereNotNull('cell_group_3_date')
@@ -81,7 +83,9 @@ class StatsOverview extends StatsOverviewWidget
                     ->descriptionIcon('heroicon-o-user-group')
                     ->color('success'),
                 
-                Stat::make('My Lifeclass Candidates', LifeclassCandidate::forG12Leader($g12LeaderId)->count())
+                Stat::make('My Lifeclass Candidates', LifeclassCandidate::whereHas('member', function($query) use ($visibleLeaderIds) {
+                        $query->whereIn('g12_leader_id', $visibleLeaderIds);
+                    })->count())
                     ->description('Qualified candidates from my members')
                     ->descriptionIcon('heroicon-o-star')
                     ->color('danger'),

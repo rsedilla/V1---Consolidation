@@ -45,9 +45,12 @@ class StartUpYourNewLifeResource extends Resource
         // Eager load the member and consolidator relationships to optimize database queries
         $query = parent::getEloquentQuery()->with(['member', 'member.consolidator']);
         
-        if ($user instanceof User && $user->canAccessLeaderData()) {
-            // Leaders see only records for their assigned members
-            return $query->forG12Leader($user->getG12LeaderId());
+        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+            // Leaders see records for their hierarchy (including descendants)
+            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
+            return $query->whereHas('member', function ($q) use ($visibleLeaderIds) {
+                $q->whereIn('g12_leader_id', $visibleLeaderIds);
+            });
         }
         
         // Admins see everything, other users see nothing
