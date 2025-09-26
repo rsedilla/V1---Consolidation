@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Members;
 use App\Filament\Resources\Members\VipMemberResource\Pages\CreateVipMember;
 use App\Filament\Resources\Members\VipMemberResource\Pages\EditVipMember;
 use App\Filament\Resources\Members\VipMemberResource\Pages\ListVipMembers;
+use App\Filament\Resources\Members\VipMemberResource\Pages\ViewVipMember;
 use App\Filament\Resources\Members\Schemas\MemberForm;
 use App\Filament\Resources\Members\Tables\MembersTable;
 use App\Models\Member;
@@ -55,6 +56,7 @@ class VipMemberResource extends Resource
         return [
             'index' => ListVipMembers::route('/'),
             'create' => CreateVipMember::route('/create'),
+            'view' => ViewVipMember::route('/{record}'),
             'edit' => EditVipMember::route('/{record}/edit'),
         ];
     }
@@ -73,11 +75,10 @@ class VipMemberResource extends Resource
 
         // Apply G12 leader filtering if user is a leader
         $user = Auth::user();
-        if ($user instanceof User && $user->canAccessLeaderData()) {
-            $g12LeaderId = $user->getG12LeaderId();
-            if ($g12LeaderId) {
-                $query->where('g12_leader_id', $g12LeaderId);
-            }
+        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+            // Get all leader IDs in this user's hierarchy (including themselves and descendants)
+            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
+            $query->whereIn('g12_leader_id', $visibleLeaderIds);
         }
 
         return $query;
@@ -159,11 +160,9 @@ class VipMemberResource extends Resource
     {
         $user = Auth::user();
         
-        if ($user instanceof User && $user->canAccessLeaderData()) {
-            $g12LeaderId = $user->getG12LeaderId();
-            if ($g12LeaderId) {
-                return static::getEloquentQuery()->count();
-            }
+        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+            // Use the same hierarchy filtering logic as the main query
+            return static::getEloquentQuery()->count();
         }
         
         // For admin users, show total VIP count

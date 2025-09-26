@@ -31,12 +31,12 @@ class UserForm
                     ->required()
                     ->helperText('Admin: Full access, Leader: Leadership privileges, User: Basic access'),
                 Select::make('g12_leader_id')
-                    ->label('G12 Leader')
+                    ->label('Belongs to G12 Leader')
                     ->options(G12Leader::orderBy('name')->pluck('name', 'id'))
                     ->searchable()
                     ->nullable()
                     ->placeholder('Select G12 Leader (optional)')
-                    ->helperText('Assign this user to a G12 leader for data filtering'),
+                    ->helperText('Which G12 Leader this user belongs to (for data filtering and hierarchy)'),
                 DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
                     ->password()

@@ -34,17 +34,17 @@ class G12LeaderForm
                     ->helperText('Select a parent leader to create hierarchy structure'),
 
                 Select::make('user_id')
-                    ->label('User Account (Optional)')
+                    ->label('Login Account (Who IS this leader)')
                     ->options(function () {
-                        return User::whereDoesntHave('leaderRecord')
+                        return User::whereIn('role', ['leader', 'admin'])
                             ->orderBy('name')
                             ->pluck('name', 'id')
                             ->toArray();
                     })
-                    ->placeholder('Link to user account (optional)')
+                    ->placeholder('Select user who represents this leader')
                     ->searchable()
                     ->preload()
-                    ->helperText('Link this leader to a user account for login access'),
+                    ->helperText('Which user account IS this G12 leader (for authentication and login)'),
             ]);
     }
 }

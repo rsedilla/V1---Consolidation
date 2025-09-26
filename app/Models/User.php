@@ -119,7 +119,7 @@ class User extends Authenticatable
      */
     public function canAccessLeaderData(): bool
     {
-        return $this->isLeader() && $this->g12_leader_id !== null;
+        return $this->isLeader() && $this->leaderRecord;
     }
 
     /**

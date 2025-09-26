@@ -193,13 +193,13 @@ cp .env.example .env
 nano .env
 ```
 
-**Update `.env` file**:
+**Update `.env` file** (for Hostinger srv1026176.hstgr.cloud):
 ```env
 APP_NAME="V2 Consolidation"
 APP_ENV=production
 APP_KEY=  # Will be generated
 APP_DEBUG=false
-APP_URL=https://your-domain.com
+APP_URL=http://srv1026176.hstgr.cloud
 
 LOG_CHANNEL=stack
 LOG_DEPRECATIONS_CHANNEL=null
@@ -219,7 +219,7 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 SESSION_LIFETIME=120
 
-# Add your mail configuration
+# Add your mail configuration (optional - configure later if needed)
 MAIL_MAILER=smtp
 MAIL_HOST=your-smtp-host
 MAIL_PORT=587
@@ -227,6 +227,8 @@ MAIL_USERNAME=your-email
 MAIL_PASSWORD=your-password
 MAIL_ENCRYPTION=tls
 ```
+
+**📝 Note:** After setting up SSL certificate (Step 8), change `APP_URL` to `https://srv1026176.hstgr.cloud`
 
 ```bash
 # Use the automated deployment script (recommended)
@@ -255,11 +257,25 @@ php artisan db:seed --force
 # Install Certbot
 sudo apt install -y certbot python3-certbot-nginx
 
-# Obtain SSL certificate
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+# Obtain SSL certificate for your Hostinger server
+sudo certbot --nginx -d srv1026176.hstgr.cloud
 
 # Verify auto-renewal
 sudo certbot renew --dry-run
+```
+
+**After SSL is installed, update your `.env` file:**
+```bash
+nano .env
+```
+Change:
+```env
+APP_URL=https://srv1026176.hstgr.cloud  # Change from http to https
+```
+
+Then clear Laravel cache:
+```bash
+php artisan config:cache
 ```
 
 ### 9. Configure Firewall
