@@ -52,7 +52,7 @@ class MemberDeletedNotification extends Notification implements ShouldQueue
                     ->line('Deleted by: ' . $this->deletedBy)
                     ->line('Consolidator dependents reassigned: ' . $this->deletionResult['reassigned_consolidator_dependents'])
                     ->line('G12 dependents affected: ' . $this->deletionResult['reassigned_g12_dependents'])
-                    ->line('**Note:** This is a soft delete. The record can be recovered if needed.')
+                    ->line('**Note:** This is a PERMANENT deletion. The record cannot be recovered.')
                     ->action('View Admin Panel', url('/admin'))
                     ->line('This is an automated notification for audit purposes.');
     }

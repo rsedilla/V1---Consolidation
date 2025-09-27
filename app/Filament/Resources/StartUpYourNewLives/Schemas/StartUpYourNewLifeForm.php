@@ -25,25 +25,25 @@ class StartUpYourNewLifeForm
 
                 // Lesson Completion Tracking
                 DatePicker::make('lesson_1_completion_date')
-                    ->label('Lesson 1: Assurance of Salvation'),
+                    ->label('Lesson 1: Salvation'),
                 DatePicker::make('lesson_2_completion_date')
-                    ->label('Lesson 2: Assurance of Answer Prayer'),
+                    ->label('Lesson 2: Repentance'),
                 DatePicker::make('lesson_3_completion_date')
-                    ->label('Lesson 3: Assurance of Victory'),
+                    ->label('Lesson 3: Lordship'),
                 DatePicker::make('lesson_4_completion_date')
-                    ->label('Lesson 4: Assurance of Forgiveness'),
+                    ->label('Lesson 4: Forgiveness'),
                 DatePicker::make('lesson_5_completion_date')
-                    ->label('Lesson 5: Assurance of Guidance'),
+                    ->label('Lesson 5: LifeStyle'),
                 DatePicker::make('lesson_6_completion_date')
-                    ->label('Lesson 6: The Spirit-Filled Life'),
+                    ->label('Lesson 6: Devotional Life'),
                 DatePicker::make('lesson_7_completion_date')
-                    ->label('Lesson 7: Walking in the Spirit'),
+                    ->label('Lesson 7: Prayer'),
                 DatePicker::make('lesson_8_completion_date')
-                    ->label('Lesson 8: Witnessing in the Spirit'),
+                    ->label('Lesson 8: Witnessing'),
                 DatePicker::make('lesson_9_completion_date')
-                    ->label('Lesson 9: Spiritual Breathing'),
+                    ->label('Lesson 9: Life of Obedience'),
                 DatePicker::make('lesson_10_completion_date')
-                    ->label('Lesson 10: Understanding the Bible'),
+                    ->label('Lesson 10: Life in the Church'),
             ]);
     }
 }

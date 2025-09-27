@@ -23,7 +23,7 @@ class SundayServicesTable
                         }
                         return 'N/A';
                     })
-                    ->searchable(['member.first_name', 'member.last_name'])
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('consolidator_name')

@@ -1,3 +1,191 @@
+# Laravel Hostinger Deployment & Update Guide
+
+This guide will help you deploy and update your Laravel project on Hostinger VPS without permission issues.
+
+---
+
+## Prerequisites
+- Hostinger VPS with Ubuntu
+- SSH access to your server
+- GitHub repository with your Laravel project
+
+---
+
+## Initial Setup (First Time Deployment)
+
+### 1. Connect to Your Server
+```
+ssh hstgr-srv1026176@your-server-ip
+```
+
+### 2. Install Required Software
+```
+sudo apt update && sudo apt upgrade -y
+sudo apt install git -y
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install nodejs -y
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+sudo chmod +x /usr/local/bin/composer
+```
+
+### 3. Clone Your Repository
+```
+cd /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/
+tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz .
+git clone --branch 07-Hierarchy --single-branch https://github.com/rsedilla/V1---Consolidation.git temp_repo
+mv temp_repo/* .
+mv temp_repo/.* . 2>/dev/null || true
+rm -rf temp_repo
+```
+
+### 4. Set Up Environment
+```
+cp .env.example .env
+nano .env
+```
+
+### 5. Install Dependencies (as your user, NOT root)
+```
+composer install --no-dev --optimize-autoloader
+npm install
+npm run build
+```
+
+### 6. Set Proper Permissions
+```
+php artisan key:generate
+sudo chown -R hstgr-srv1026176:hstgr-srv1026176 /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/
+sudo find . -type d -exec chmod 755 {} \;
+sudo find . -type f -exec chmod 644 {} \;
+sudo chmod -R 775 storage bootstrap/cache
+sudo chown -R hstgr-srv1026176:www-data storage bootstrap/cache
+```
+
+### 7. Database Setup
+```
+php artisan migrate
+php artisan db:seed # (optional)
+```
+
+### 8. Clear Caches
+```
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+php artisan route:clear
+php artisan optimize
+```
+
+---
+
+## Updating Your Project (Future Updates)
+
+### Method 1: Safe Update with Backup
+```
+cd /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/
+tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz .
+git fetch origin
+git reset --hard origin/07-Hierarchy
+composer install --no-dev --optimize-autoloader
+npm install
+npm run build
+sudo chown -R hstgr-srv1026176:hstgr-srv1026176 .
+sudo chmod -R 775 storage bootstrap/cache
+sudo chown -R hstgr-srv1026176:www-data storage/bootstrap/cache
+php artisan migrate
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+php artisan route:clear
+php artisan optimize
+```
+
+### Method 2: Fresh Clone Update
+```
+cd /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/
+tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz .
+cd /tmp
+git clone --branch 07-Hierarchy --single-branch https://github.com/rsedilla/V1---Consolidation.git
+cp -r V1---Consolidation/* /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/
+cd /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/
+composer install --no-dev --optimize-autoloader
+npm install
+npm run build
+sudo chown -R hstgr-srv1026176:hstgr-srv1026176 .
+sudo chmod -R 775 storage bootstrap/cache
+sudo chown -R hstgr-srv1026176:www-data storage/bootstrap/cache
+php artisan migrate
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+php artisan route:clear
+php artisan optimize
+rm -rf /tmp/V1---Consolidation
+```
+
+---
+
+## Important Rules to Avoid Permission Issues
+
+- Never run npm or composer as root
+- Always run npm and composer as your user
+- Always backup before updates
+- Never overwrite your .env file
+- Always fix permissions after updates
+
+---
+
+## Troubleshooting
+
+**Permission Denied Errors:**
+```
+sudo chown -R hstgr-srv1026176:hstgr-srv1026176 /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/
+sudo chmod -R 775 storage bootstrap/cache
+sudo chown -R hstgr-srv1026176:www-data storage/bootstrap/cache
+```
+
+**Build Errors (alpinejs, terser not found):**
+```
+npm install alpinejs --save
+npm install terser --save-dev
+npm run build
+```
+
+**Database Connection Issues:**
+```
+nano .env
+php artisan config:clear
+```
+
+---
+
+## Quick Reference
+
+**One-Command Update:**
+```
+cd /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/ && \
+tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz . && \
+git fetch origin && git reset --hard origin/07-Hierarchy && \
+composer install --no-dev --optimize-autoloader && \
+npm install && npm run build && \
+sudo chown -R hstgr-srv1026176:hstgr-srv1026176 . && \
+sudo chmod -R 775 storage bootstrap/cache && \
+sudo chown -R hstgr-srv1026176:www-data storage/bootstrap/cache && \
+php artisan migrate && php artisan optimize
+```
+
+**Permission Fix Command:**
+```
+cd /home/hstgr-srv1026176/htdocs/srv1026176.hstgr.cloud/ && \
+sudo chown -R hstgr-srv1026176:hstgr-srv1026176 . && \
+sudo chmod -R 775 storage bootstrap/cache && \
+sudo chown -R hstgr-srv1026176:www-data storage/bootstrap/cache
+```
+
+---
+
+**Always backup, never run npm/composer as root, and keep your .env file safe!**
 # Laravel V2-Consolidation - Production Deployment Guide
 
 ## 🎉 Latest Updates (Branch Merged to Main)

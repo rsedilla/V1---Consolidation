@@ -23,7 +23,7 @@ class MemberDeletionController extends Controller
     public function checkDeletion(Member $member): JsonResponse
     {
         $canDelete = $this->deletionService->canSafelyDelete($member);
-        $dependents = $this->deletionService->getDependents($member);
+        $dependents = $this->deletionService->getDependents($member, true); // Load records for UI
 
         return response()->json([
             'can_delete' => $canDelete['can_delete'],
@@ -60,6 +60,27 @@ class MemberDeletionController extends Controller
 
         $result = $this->deletionService->safeDelete(
             $member,
+            $request->new_consolidator_id,
+            $request->new_g12_leader_id
+        );
+
+        return response()->json($result, $result['success'] ? 200 : 500);
+    }
+
+    /**
+     * Batch delete members with reassignment
+     */
+    public function batchDelete(Request $request): JsonResponse
+    {
+        $request->validate([
+            'member_ids' => 'required|array|min:1',
+            'member_ids.*' => 'exists:members,id',
+            'new_consolidator_id' => 'nullable|exists:members,id',
+            'new_g12_leader_id' => 'nullable|exists:members,id',
+        ]);
+
+        $result = $this->deletionService->batchDelete(
+            $request->member_ids,
             $request->new_consolidator_id,
             $request->new_g12_leader_id
         );

@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use App\Services\MemberDeletionService;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
@@ -17,23 +18,23 @@ class MembersTable
             ->columns([
                 TextColumn::make('first_name')
                     ->label('First Name')
-                    ->searchable(['first_name'])
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('last_name')
                     ->label('Last Name')
-                    ->searchable(['last_name'])
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('memberType.name')
                     ->label('Member Type')
-                    ->searchable(['memberType.name'])
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('status.name')
                     ->label('Status')
-                    ->searchable(['status.name'])
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
-                    ->searchable(['g12Leader.name'])
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('consolidator_name')
                     ->label('Consolidator')
@@ -44,7 +45,7 @@ class MembersTable
                         return 'N/A';
                     })
                     ->placeholder('N/A')
-                    ->searchable(['consolidator.first_name', 'consolidator.last_name'])
+                    ->searchable(false)
                     ->sortable(query: function ($query, $direction) {
                         return $query->leftJoin('members as consolidators', 'members.consolidator_id', '=', 'consolidators.id')
                             ->orderBy('consolidators.first_name', $direction)
@@ -78,7 +79,19 @@ class MembersTable
                     ->modalDescription('Are you sure you want to permanently delete this member? This action cannot be undone and will permanently remove all member data from the system.')
                     ->modalSubmitActionLabel('Yes, Delete Permanently')
                     ->modalIcon('heroicon-o-exclamation-triangle')
-                    ->color('danger'),
+                    ->color('danger')
+                    ->before(function ($record) {
+                        // Use MemberDeletionService for safe deletion with dependency handling
+                        $deletionService = app(MemberDeletionService::class);
+                        $result = $deletionService->safeDelete($record);
+                        
+                        if (!$result['success']) {
+                            throw new \Exception($result['message']);
+                        }
+                        
+                        // Prevent the default delete action since we already handled it
+                        return false;
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -88,7 +101,18 @@ class MembersTable
                         ->modalDescription('Are you sure you want to permanently delete the selected members? This action cannot be undone and will permanently remove all member data from the system.')
                         ->modalSubmitActionLabel('Yes, Delete Permanently')
                         ->modalIcon('heroicon-o-exclamation-triangle')
-                        ->color('danger'),
+                        ->color('danger')
+                        ->action(function ($records) {
+                            // Use MemberDeletionService for batch safe deletion
+                            $deletionService = app(MemberDeletionService::class);
+                            $memberIds = collect($records)->pluck('id')->toArray();
+                            
+                            $result = $deletionService->batchDelete($memberIds);
+                            
+                            if (!$result['success']) {
+                                throw new \Exception($result['message']);
+                            }
+                        }),
                 ]),
             ])
             ->defaultSort('last_name', 'asc');
