@@ -26,14 +26,14 @@ return new class extends Migration
 
         Schema::table('sunday_services', function (Blueprint $table) {
             $table->index('member_id', 'idx_sunday_services_member_id');
-            $table->index('date', 'idx_sunday_services_date');
-            $table->index(['member_id', 'date'], 'idx_sunday_services_member_date');
+            $table->index('service_date', 'idx_sunday_services_service_date');
+            $table->index(['member_id', 'service_date'], 'idx_sunday_services_member_service_date');
         });
 
         Schema::table('cell_groups', function (Blueprint $table) {
             $table->index('member_id', 'idx_cell_groups_member_id');
-            $table->index('date', 'idx_cell_groups_date');
-            $table->index(['member_id', 'date'], 'idx_cell_groups_member_date');
+            $table->index('attendance_date', 'idx_cell_groups_attendance_date');
+            $table->index(['member_id', 'attendance_date'], 'idx_cell_groups_member_attendance_date');
         });
 
         Schema::table('start_up_your_new_life', function (Blueprint $table) {
@@ -68,14 +68,14 @@ return new class extends Migration
 
         Schema::table('sunday_services', function (Blueprint $table) {
             $table->dropIndex('idx_sunday_services_member_id');
-            $table->dropIndex('idx_sunday_services_date');
-            $table->dropIndex('idx_sunday_services_member_date');
+            $table->dropIndex('idx_sunday_services_service_date');
+            $table->dropIndex('idx_sunday_services_member_service_date');
         });
 
         Schema::table('cell_groups', function (Blueprint $table) {
             $table->dropIndex('idx_cell_groups_member_id');
-            $table->dropIndex('idx_cell_groups_date');
-            $table->dropIndex('idx_cell_groups_member_date');
+            $table->dropIndex('idx_cell_groups_attendance_date');
+            $table->dropIndex('idx_cell_groups_member_attendance_date');
         });
 
         Schema::table('start_up_your_new_life', function (Blueprint $table) {
