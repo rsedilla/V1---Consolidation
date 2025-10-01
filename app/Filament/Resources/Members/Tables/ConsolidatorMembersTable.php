@@ -17,20 +17,18 @@ class ConsolidatorMembersTable
             ->columns([
                 TextColumn::make('first_name')
                     ->label('First Name')
-                    ->searchable(['first_name'])
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('last_name')
                     ->label('Last Name')
-                    ->searchable(['last_name'])
+                    ->searchable()
                     ->sortable(),
                 // Member Type column removed (they're all Consolidators)
                 TextColumn::make('status.name')
                     ->label('Status')
-                    ->searchable(['status.name'])
                     ->sortable(),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
-                    ->searchable(['g12Leader.name'])
                     ->sortable(),
                 // Consolidator column removed (doesn't apply to consolidators)
                 // VIP Status column removed (doesn't apply to consolidators)
