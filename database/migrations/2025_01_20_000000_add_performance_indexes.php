@@ -108,12 +108,6 @@ return new class extends Migration
                 $table->index('member_id', 'idx_suynl_member_id');
             });
         }
-        
-        if (!$this->indexExists('start_up_your_new_life', 'idx_suynl_member_date')) {
-            Schema::table('start_up_your_new_life', function (Blueprint $table) {
-                $table->index(['member_id', 'lesson_date'], 'idx_suynl_member_date');
-            });
-        }
 
         // Check and create indexes for lifeclass_candidates table
         if (!$this->indexExists('lifeclass_candidates', 'idx_lifeclass_member_id')) {
@@ -216,11 +210,6 @@ return new class extends Migration
         if ($this->indexExists('start_up_your_new_life', 'idx_suynl_member_id')) {
             Schema::table('start_up_your_new_life', function (Blueprint $table) {
                 $table->dropIndex('idx_suynl_member_id');
-            });
-        }
-        if ($this->indexExists('start_up_your_new_life', 'idx_suynl_member_date')) {
-            Schema::table('start_up_your_new_life', function (Blueprint $table) {
-                $table->dropIndex('idx_suynl_member_date');
             });
         }
 
