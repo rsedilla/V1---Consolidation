@@ -7,7 +7,7 @@ use App\Filament\Resources\Members\VipMemberResource\Pages\EditVipMember;
 use App\Filament\Resources\Members\VipMemberResource\Pages\ListVipMembers;
 use App\Filament\Resources\Members\VipMemberResource\Pages\ViewVipMember;
 use App\Filament\Resources\Members\Schemas\MemberForm;
-use App\Filament\Resources\Members\Tables\MembersTable;
+use App\Filament\Resources\Members\Tables\VipMembersTable;
 use App\Models\Member;
 use App\Models\User;
 use BackedEnum;
@@ -41,7 +41,7 @@ class VipMemberResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return MembersTable::configure($table);
+        return VipMembersTable::configure($table);
     }
 
     public static function getRelations(): array
