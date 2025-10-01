@@ -115,12 +115,6 @@ return new class extends Migration
                 $table->index('member_id', 'idx_lifeclass_member_id');
             });
         }
-        
-        if (!$this->indexExists('lifeclass_candidates', 'idx_lifeclass_status')) {
-            Schema::table('lifeclass_candidates', function (Blueprint $table) {
-                $table->index('status', 'idx_lifeclass_status');
-            });
-        }
 
         // Check and create indexes for users table
         if (!$this->indexExists('users', 'idx_users_g12_leader_id')) {
@@ -217,11 +211,6 @@ return new class extends Migration
         if ($this->indexExists('lifeclass_candidates', 'idx_lifeclass_member_id')) {
             Schema::table('lifeclass_candidates', function (Blueprint $table) {
                 $table->dropIndex('idx_lifeclass_member_id');
-            });
-        }
-        if ($this->indexExists('lifeclass_candidates', 'idx_lifeclass_status')) {
-            Schema::table('lifeclass_candidates', function (Blueprint $table) {
-                $table->dropIndex('idx_lifeclass_status');
             });
         }
 
