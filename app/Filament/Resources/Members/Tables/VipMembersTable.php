@@ -25,9 +25,11 @@ class VipMembersTable
                     ->searchable()
                     ->sortable(),
                 // Member Type column removed as requested
-                TextColumn::make('status.name')
-                    ->label('Status')
-                    ->sortable(),
+                TextColumn::make('consolidation_date')
+                    ->label('Consolidation Date')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->placeholder('Not set'),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
                     ->sortable(),

@@ -21,7 +21,12 @@ class Member extends Model
         'member_type_id',
         'g12_leader_id',
         'consolidator_id',
-        'vip_status_id'
+        'vip_status_id',
+        'consolidation_date'
+    ];
+
+    protected $casts = [
+        'consolidation_date' => 'date',
     ];
 
     public function memberType()

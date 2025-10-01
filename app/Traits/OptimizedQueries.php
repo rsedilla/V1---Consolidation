@@ -60,6 +60,7 @@ trait OptimizedQueries
             'g12_leader_id',
             'consolidator_id', // Added missing consolidator_id
             'vip_status_id',
+            'consolidation_date',
             'created_at'
         ])->withMemberRelations()->withConsolidator();
     }

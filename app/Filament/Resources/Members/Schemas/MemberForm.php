@@ -78,6 +78,11 @@ class MemberForm
                     ->options(CacheService::getVipStatuses())
                     ->placeholder('Select VIP status')
                     ->searchable(),
+
+                DatePicker::make('consolidation_date')
+                    ->label('Date of Consolidation')
+                    ->displayFormat('d/m/Y')
+                    ->helperText('Date when the member accepted our Lord Jesus Christ'),
             ]);
     }
 }
