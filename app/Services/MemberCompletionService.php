@@ -33,14 +33,14 @@ class MemberCompletionService
             return false;
         }
 
-        // Check all 10 lessons are completed
+        // Check at least 4 lessons are completed
+        $completed = 0;
         for ($i = 1; $i <= 10; $i++) {
-            if (!$newLifeRecord->{"lesson_{$i}_completion_date"}) {
-                return false;
+            if ($newLifeRecord->{"lesson_{$i}_completion_date"}) {
+                $completed++;
             }
         }
-
-        return true;
+        return $completed >= 4;
     }
 
     /**
