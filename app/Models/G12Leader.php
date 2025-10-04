@@ -51,6 +51,9 @@ class G12Leader extends Model
     {
         $descendants = collect([$this->id]);
         
+        // Eager load children to prevent lazy loading violations
+        $this->loadMissing('children');
+        
         foreach ($this->children as $child) {
             $descendants = $descendants->merge($child->getAllDescendantIds());
         }
@@ -64,6 +67,9 @@ class G12Leader extends Model
     public function getAllAncestorIds()
     {
         $ancestors = collect();
+        
+        // Eager load parent to prevent lazy loading violations
+        $this->loadMissing('parent');
         
         if ($this->parent) {
             $ancestors->push($this->parent->id);
