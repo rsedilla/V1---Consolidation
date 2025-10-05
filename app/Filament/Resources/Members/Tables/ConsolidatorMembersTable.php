@@ -29,6 +29,7 @@ class ConsolidatorMembersTable
                     ->sortable(),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
+                    ->searchable()
                     ->sortable(),
                 // Consolidator column removed (doesn't apply to consolidators)
                 // VIP Status column removed (doesn't apply to consolidators)

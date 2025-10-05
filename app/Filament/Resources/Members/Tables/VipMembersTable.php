@@ -32,6 +32,7 @@ class VipMembersTable
                     ->placeholder('Not set'),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('consolidator_name')
                     ->label('Consolidator')
