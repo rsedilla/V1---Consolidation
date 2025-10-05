@@ -8,6 +8,7 @@ use App\Filament\Resources\Members\VipMemberResource\Pages\ListVipMembers;
 use App\Filament\Resources\Members\VipMemberResource\Pages\ViewVipMember;
 use App\Filament\Resources\Members\Schemas\MemberForm;
 use App\Filament\Resources\Members\Tables\VipMembersTable;
+use App\Filament\Traits\HasMemberSearch;
 use App\Models\Member;
 use App\Models\User;
 use BackedEnum;
@@ -22,6 +23,7 @@ use App\Services\CacheService;
 
 class VipMemberResource extends Resource
 {
+    use HasMemberSearch;
     protected static ?string $model = Member::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
@@ -85,70 +87,35 @@ class VipMemberResource extends Resource
     }
 
     /**
-     * Configure global search for VIP members
+     * Extend relationship searchable attributes for VIP members
      */
-    public static function getGlobalSearchEloquentQuery(): Builder
+    public static function getRelationshipSearchableAttributes(): array
     {
-        return static::getEloquentQuery()
-            ->with(['memberType', 'status', 'g12Leader', 'consolidator', 'vipStatus']);
-    }
-
-    /**
-     * Define searchable attributes for global search
-     */
-    public static function getGloballySearchableAttributes(): array
-    {
-        return [
-            'first_name',
-            'last_name', 
-            'email',
-            'phone',
-            'address',
-            'memberType.name',
-            'status.name',
-            'g12Leader.name',
+        $baseAttributes = parent::getRelationshipSearchableAttributes();
+        
+        return array_merge($baseAttributes, [
             'consolidator.first_name',
             'consolidator.last_name',
             'vipStatus.name',
-        ];
+        ]);
     }
 
     /**
-     * Configure global search result title
-     */
-    public static function getGlobalSearchResultTitle(Model $record): string
-    {
-        return "{$record->first_name} {$record->last_name}";
-    }
-
-    /**
-     * Configure global search result details
+     * Configure global search result details for VIP members
      */
     public static function getGlobalSearchResultDetails(Model $record): array
     {
-        $details = [];
-        
-        if ($record->email) {
-            $details[] = "Email: {$record->email}";
-        }
-        
-        if ($record->phone) {
-            $details[] = "Phone: {$record->phone}";
-        }
-        
-        if ($record->g12Leader) {
-            $details[] = "G12 Leader: {$record->g12Leader->name}";
-        }
+        $details = static::getBaseSearchResultDetails($record);
         
         if ($record->consolidator) {
-            $details[] = "Consolidator: {$record->consolidator->first_name} {$record->consolidator->last_name}";
+            $details['Consolidator'] = "{$record->consolidator->first_name} {$record->consolidator->last_name}";
         }
         
         if ($record->vipStatus) {
-            $details[] = "VIP Status: {$record->vipStatus->name}";
+            $details['VIP Status'] = $record->vipStatus->name;
         }
 
-        return $details;
+        return static::formatSearchDetails($details);
     }
 
     public static function canCreate(): bool

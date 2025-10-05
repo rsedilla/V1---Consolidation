@@ -7,6 +7,7 @@ use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\EditConsolid
 use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\ListConsolidatorMembers;
 use App\Filament\Resources\Members\Schemas\ConsolidatorMemberForm;
 use App\Filament\Resources\Members\Tables\ConsolidatorMembersTable;
+use App\Filament\Traits\HasMemberSearch;
 use App\Models\Member;
 use App\Models\User;
 use BackedEnum;
@@ -21,6 +22,7 @@ use App\Services\CacheService;
 
 class ConsolidatorMemberResource extends Resource
 {
+    use HasMemberSearch;
     protected static ?string $model = Member::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
@@ -83,61 +85,16 @@ class ConsolidatorMemberResource extends Resource
     }
 
     /**
-     * Configure global search for Consolidator members
-     */
-    public static function getGlobalSearchEloquentQuery(): Builder
-    {
-        return static::getEloquentQuery()
-            ->with(['memberType', 'status', 'g12Leader']);
-    }
-
-    /**
-     * Define searchable attributes for global search
-     */
-    public static function getGloballySearchableAttributes(): array
-    {
-        return [
-            'first_name',
-            'last_name', 
-            'email',
-            'phone',
-            'address',
-            'memberType.name',
-            'status.name',
-            'g12Leader.name',
-        ];
-    }
-
-    /**
-     * Configure global search result title
-     */
-    public static function getGlobalSearchResultTitle(Model $record): string
-    {
-        return "{$record->first_name} {$record->last_name}";
-    }
-
-    /**
-     * Configure global search result details
+     * Configure global search result details for Consolidator members
      */
     public static function getGlobalSearchResultDetails(Model $record): array
     {
-        $details = [];
+        $details = static::getBaseSearchResultDetails($record);
         
-        if ($record->email) {
-            $details[] = "Email: {$record->email}";
-        }
-        
-        if ($record->phone) {
-            $details[] = "Phone: {$record->phone}";
-        }
-        
-        if ($record->g12Leader) {
-            $details[] = "G12 Leader: {$record->g12Leader->name}";
-        }
-        
-        $details[] = "Role: Consolidator";
+        // Add role indicator
+        $details['Role'] = 'Consolidator';
 
-        return $details;
+        return static::formatSearchDetails($details);
     }
 
     public static function canCreate(): bool
