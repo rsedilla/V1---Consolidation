@@ -70,17 +70,15 @@ class VipMemberResource extends Resource
         // Use optimized eager loading
         $query->forListing();
         
-        // Filter to VIP members only
-        $query->whereHas('memberType', function (Builder $query) {
-            $query->where('name', 'VIP');
-        });
+        // Filter to VIP members only (using optimized scope)
+        $query->vips();
 
         // Apply G12 leader filtering if user is a leader
         $user = Auth::user();
         if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
             // Get all leader IDs in this user's hierarchy (including themselves and descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
-            $query->whereIn('g12_leader_id', $visibleLeaderIds);
+            $query->underLeaders($visibleLeaderIds);
         }
 
         return $query;
@@ -132,9 +130,7 @@ class VipMemberResource extends Resource
             return static::getEloquentQuery()->count();
         }
         
-        // For admin users, show total VIP count
-        return Member::whereHas('memberType', function (Builder $query) {
-            $query->where('name', 'VIP');
-        })->count();
+        // For admin users, show total VIP count (using optimized scope)
+        return Member::vips()->count();
     }
 }

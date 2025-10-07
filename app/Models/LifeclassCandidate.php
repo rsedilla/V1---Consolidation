@@ -34,4 +34,14 @@ class LifeclassCandidate extends Model
             $q->where('g12_leader_id', $g12LeaderId);
         });
     }
+
+    /**
+     * Scope to get candidates for members under specific leaders
+     */
+    public function scopeUnderLeaders($query, array $leaderIds)
+    {
+        return $query->whereHas('member', function ($q) use ($leaderIds) {
+            $q->underLeaders($leaderIds);
+        });
+    }
 }

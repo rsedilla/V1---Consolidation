@@ -74,20 +74,42 @@ class Member extends Model
         return $this->belongsTo(VipStatus::class);
     }
 
-    // Scope to get only consolidators
-    public function scopeConsolidators($query)
-    {
-        return $query->whereHas('memberType', function ($q) {
-            $q->where('name', 'Consolidator');
-        });
-    }
-
-    // Scope to get only VIP members
+    /**
+     * Scope to get only VIP members
+     * Optimized with direct member_type_id lookup to avoid join
+     */
     public function scopeVips($query)
     {
-        return $query->whereHas('memberType', function ($q) {
-            $q->where('name', 'VIP');
-        });
+        static $vipTypeId;
+        
+        if (!isset($vipTypeId)) {
+            $vipTypeId = \Illuminate\Support\Facades\Cache::remember(
+                'member_type_vip_id',
+                3600,
+                fn() => MemberType::where('name', 'VIP')->value('id')
+            );
+        }
+        
+        return $query->where('member_type_id', $vipTypeId);
+    }
+
+    /**
+     * Scope to get only Consolidator members
+     * Optimized with direct member_type_id lookup to avoid join
+     */
+    public function scopeConsolidators($query)
+    {
+        static $consolidatorTypeId;
+        
+        if (!isset($consolidatorTypeId)) {
+            $consolidatorTypeId = \Illuminate\Support\Facades\Cache::remember(
+                'member_type_consolidator_id',
+                3600,
+                fn() => MemberType::where('name', 'Consolidator')->value('id')
+            );
+        }
+        
+        return $query->where('member_type_id', $consolidatorTypeId);
     }
 
     /**
@@ -97,6 +119,25 @@ class Member extends Model
     public function scopeForG12Leader($query, $g12LeaderId)
     {
         return $query->where('g12_leader_id', $g12LeaderId);
+    }
+
+    /**
+     * Scope to filter members under multiple G12 leaders (hierarchy)
+     * Used for filtering by leader hierarchy
+     */
+    public function scopeUnderLeaders($query, array $leaderIds)
+    {
+        return $query->whereIn('g12_leader_id', $leaderIds);
+    }
+
+    /**
+     * Scope to get active members (optional - if you have status filtering)
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereHas('status', function ($q) {
+            $q->where('name', '!=', 'Inactive');
+        });
     }
 
     /**

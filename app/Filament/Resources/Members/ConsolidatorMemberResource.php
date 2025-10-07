@@ -68,17 +68,15 @@ class ConsolidatorMemberResource extends Resource
         // Use optimized eager loading
         $query->forListing();
         
-        // Filter to Consolidator members only
-        $query->whereHas('memberType', function (Builder $query) {
-            $query->where('name', 'Consolidator');
-        });
+        // Filter to Consolidator members only (using optimized scope)
+        $query->consolidators();
 
         // Apply G12 leader filtering if user is a leader
         $user = Auth::user();
         if ($user instanceof User && $user->leaderRecord) {
             // Get all leader IDs in this user's hierarchy (including themselves and descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
-            $query->whereIn('g12_leader_id', $visibleLeaderIds);
+            $query->underLeaders($visibleLeaderIds);
         }
 
         return $query;
@@ -111,9 +109,7 @@ class ConsolidatorMemberResource extends Resource
             return static::getEloquentQuery()->count();
         }
         
-        // For admin users, show total Consolidator count
-        return Member::whereHas('memberType', function (Builder $query) {
-            $query->where('name', 'Consolidator');
-        })->count();
+        // For admin users, show total Consolidator count (using optimized scope)
+        return Member::consolidators()->count();
     }
 }
