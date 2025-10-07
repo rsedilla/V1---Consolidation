@@ -23,17 +23,47 @@ class VipMembersTable
                 TextColumn::make('last_name')
                     ->label('Last Name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 // Member Type column removed as requested
                 TextColumn::make('consolidation_date')
                     ->label('Consolidation Date')
                     ->date('d/m/Y')
                     ->sortable()
-                    ->placeholder('Not set'),
+                    ->placeholder('Not set')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(query: function ($query, string $search) {
+                        // Map month names to numbers
+                        $months = [
+                            'january' => 1, 'jan' => 1,
+                            'february' => 2, 'feb' => 2,
+                            'march' => 3, 'mar' => 3,
+                            'april' => 4, 'apr' => 4,
+                            'may' => 5,
+                            'june' => 6, 'jun' => 6,
+                            'july' => 7, 'jul' => 7,
+                            'august' => 8, 'aug' => 8,
+                            'september' => 9, 'sep' => 9, 'sept' => 9,
+                            'october' => 10, 'oct' => 10,
+                            'november' => 11, 'nov' => 11,
+                            'december' => 12, 'dec' => 12,
+                        ];
+                        
+                        $searchLower = strtolower(trim($search));
+                        
+                        // Check if search term is a month name
+                        if (isset($months[$searchLower])) {
+                            return $query->whereMonth('consolidation_date', $months[$searchLower]);
+                        }
+                        
+                        // Otherwise search as regular date
+                        return $query->where('consolidation_date', 'like', "%{$search}%");
+                    }),
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('consolidator_name')
                     ->label('Consolidator')
                     ->getStateUsing(function ($record) {
@@ -43,7 +73,13 @@ class VipMembersTable
                         return 'N/A';
                     })
                     ->placeholder('N/A')
-                    ->searchable(false)
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(query: function ($query, string $search) {
+                        return $query->whereHas('consolidator', function ($q) use ($search) {
+                            $q->where('first_name', 'like', "%{$search}%")
+                              ->orWhere('last_name', 'like', "%{$search}%");
+                        });
+                    })
                     ->sortable(query: function ($query, $direction) {
                         return $query->leftJoin('members as consolidators', 'members.consolidator_id', '=', 'consolidators.id')
                             ->orderBy('consolidators.first_name', $direction)
