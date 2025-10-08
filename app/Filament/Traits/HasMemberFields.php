@@ -12,20 +12,18 @@ trait HasMemberFields
     /**
      * Get VIP member selection field
      * Shows only members with VIP member type based on user role and G12 hierarchy
-     * Excludes VIPs who already have New Life Training records to prevent duplicates
      */
     public static function getVipMemberField(): Select
     {
         $user = Auth::user();
         
         if ($user instanceof User && $user->isAdmin()) {
-            // Admins see all VIPs without New Life Training
-            $vips = Member::vips()->withoutNewLifeTraining()->orderBy('first_name')->get();
+            // Admins see all VIPs
+            $vips = Member::vips()->orderBy('first_name')->get();
         } elseif ($user instanceof User && $user->leaderRecord) {
-            // Leaders see VIPs in their G12 hierarchy (themselves + all descendants) without New Life Training
+            // Leaders see VIPs in their G12 hierarchy (themselves + all descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
             $vips = Member::vips()
-                ->withoutNewLifeTraining()
                 ->whereIn('g12_leader_id', $visibleLeaderIds)
                 ->orderBy('first_name')
                 ->get();
@@ -40,8 +38,7 @@ trait HasMemberFields
             }))
             ->required()
             ->searchable()
-            ->placeholder('Select a VIP member')
-            ->helperText('Only VIPs without existing New Life Training records are shown');
+            ->placeholder('Select a VIP member');
     }
 
     /**
