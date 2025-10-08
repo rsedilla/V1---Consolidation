@@ -66,18 +66,25 @@ class MemberForm
                     ->required($user instanceof User && $user->isAdmin()),
                 Select::make('consolidator_id')
                     ->label('Consolidator')
-                    ->options($user instanceof User ? $user->getAvailableConsolidators() : [])
+                    ->options(function ($record) use ($user) {
+                        $options = $user instanceof User ? $user->getAvailableConsolidators() : [];
+                        
+                        // If editing and current consolidator is not in available options, add it
+                        if ($record && $record->consolidator_id && !isset($options[$record->consolidator_id])) {
+                            $consolidator = Member::find($record->consolidator_id);
+                            if ($consolidator) {
+                                $options[$consolidator->id] = "{$consolidator->first_name} {$consolidator->last_name}";
+                            }
+                        }
+                        
+                        return $options;
+                    })
                     ->searchable()
                     ->preload()
                     ->placeholder($user instanceof User && $user->isLeader() ? 'Select from your consolidators' : 'Select consolidator for VIP members')
                     ->helperText($user instanceof User && $user->isLeader() ? 
                         'Search and select from available consolidators in your hierarchy. Your own name will not appear in the search results.' : 
-                        null)
-                    ->getOptionLabelFromRecordUsing(fn ($record) => 
-                        $record && $record->consolidator 
-                            ? "{$record->consolidator->first_name} {$record->consolidator->last_name}" 
-                            : null
-                    ),
+                        null),
                 Select::make('vip_status_id')
                     ->label('VIP Status')
                     ->options(CacheService::getVipStatuses())
