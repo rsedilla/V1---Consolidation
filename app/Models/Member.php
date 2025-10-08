@@ -141,6 +141,33 @@ class Member extends Model
     }
 
     /**
+     * Scope to exclude members who already have New Life Training records
+     * Useful for preventing duplicate entries when adding to New Life Training
+     */
+    public function scopeWithoutNewLifeTraining($query)
+    {
+        return $query->whereDoesntHave('startUpYourNewLife');
+    }
+
+    /**
+     * Scope to exclude members who already have Sunday Service records
+     * Useful for preventing duplicate entries when adding to Sunday Service
+     */
+    public function scopeWithoutSundayService($query)
+    {
+        return $query->whereDoesntHave('sundayServices');
+    }
+
+    /**
+     * Scope to exclude members who already have Cell Group records
+     * Useful for preventing duplicate entries when adding to Cell Group
+     */
+    public function scopeWithoutCellGroup($query)
+    {
+        return $query->whereDoesntHave('cellGroups');
+    }
+
+    /**
      * Check if this member is qualified for Life Class
      * Uses MemberCompletionService for the logic
      */
