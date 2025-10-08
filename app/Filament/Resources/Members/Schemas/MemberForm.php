@@ -72,7 +72,12 @@ class MemberForm
                     ->placeholder($user instanceof User && $user->isLeader() ? 'Select from your consolidators' : 'Select consolidator for VIP members')
                     ->helperText($user instanceof User && $user->isLeader() ? 
                         'Search and select from available consolidators in your hierarchy. Your own name will not appear in the search results.' : 
-                        null),
+                        null)
+                    ->getOptionLabelFromRecordUsing(fn ($record) => 
+                        $record && $record->consolidator 
+                            ? "{$record->consolidator->first_name} {$record->consolidator->last_name}" 
+                            : null
+                    ),
                 Select::make('vip_status_id')
                     ->label('VIP Status')
                     ->options(CacheService::getVipStatuses())
