@@ -11,16 +11,14 @@ use App\Filament\Traits\HasMemberSearch;
 use App\Models\Member;
 use App\Models\User;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\CacheService;
 
-class ConsolidatorMemberResource extends Resource
+class ConsolidatorMemberResource extends BaseMemberResource
 {
     use HasMemberSearch;
     protected static ?string $model = Member::class;
@@ -61,25 +59,12 @@ class ConsolidatorMemberResource extends Resource
         ];
     }
 
-    public static function getEloquentQuery(): Builder
+    /**
+     * Apply Consolidator member type filter
+     */
+    protected static function applyMemberTypeFilter(Builder $query): void
     {
-        $query = parent::getEloquentQuery();
-        
-        // Use optimized eager loading
-        $query->forListing();
-        
-        // Filter to Consolidator members only (using optimized scope)
         $query->consolidators();
-
-        // Apply G12 leader filtering if user is a leader
-        $user = Auth::user();
-        if ($user instanceof User && $user->leaderRecord) {
-            // Get all leader IDs in this user's hierarchy (including themselves and descendants)
-            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
-            $query->underLeaders($visibleLeaderIds);
-        }
-
-        return $query;
     }
 
     /**
@@ -104,12 +89,31 @@ class ConsolidatorMemberResource extends Resource
     {
         $user = Auth::user();
         
-        if ($user instanceof User && $user->leaderRecord) {
-            // Use the same hierarchy filtering logic as the main query
-            return static::getEloquentQuery()->count();
-        }
+        // Cache badge count for 5 minutes per user
+        $cacheKey = $user instanceof User && $user->leaderRecord
+            ? "nav_badge_consolidator_leader_{$user->id}"
+            : "nav_badge_consolidator_admin";
         
-        // For admin users, show total Consolidator count (using optimized scope)
-        return Member::consolidators()->count();
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($user) {
+            if ($user instanceof User && $user->leaderRecord) {
+                // Use the same hierarchy filtering logic as the main query
+                return static::getEloquentQuery()->count();
+            }
+            
+            // For admin users, show total Consolidator count (using optimized scope)
+            return Member::consolidators()->count();
+        });
+    }
+    
+    /**
+     * Clear navigation badge cache for a specific user or all users
+     */
+    public static function clearNavigationBadgeCache($userId = null): void
+    {
+        if ($userId) {
+            \Illuminate\Support\Facades\Cache::forget("nav_badge_consolidator_leader_{$userId}");
+        } else {
+            \Illuminate\Support\Facades\Cache::forget("nav_badge_consolidator_admin");
+        }
     }
 }
