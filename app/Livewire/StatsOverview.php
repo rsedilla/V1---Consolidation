@@ -52,11 +52,10 @@ class StatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-star')
                 ->color('warning');
             
-            // Get only the leaders under this user's hierarchy (excluding self to avoid duplication)
+            // Get only the DIRECT children (direct 12) of this leader
             $leaders = G12Leader::with('user')
+                ->where('parent_id', $user->leaderRecord->id) // Only direct children
                 ->whereHas('user')
-                ->whereIn('id', $visibleLeaderIds)
-                ->where('id', '!=', $user->leaderRecord->id) // Exclude the logged-in leader
                 ->get()
                 ->sortBy(function($leader) {
                     return $leader->user->name ?? '';
