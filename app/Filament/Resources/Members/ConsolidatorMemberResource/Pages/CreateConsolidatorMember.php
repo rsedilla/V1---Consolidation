@@ -5,8 +5,10 @@ namespace App\Filament\Resources\Members\ConsolidatorMemberResource\Pages;
 use App\Filament\Resources\Members\ConsolidatorMemberResource;
 use App\Filament\Traits\HandlesDatabaseErrors;
 use App\Services\MemberValidationService;
+use App\Livewire\StatsOverview;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class CreateConsolidatorMember extends CreateRecord
 {
@@ -42,5 +44,15 @@ class CreateConsolidatorMember extends CreateRecord
         }
         
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        // Clear navigation badge cache for current user
+        $userId = Auth::id();
+        ConsolidatorMemberResource::clearNavigationBadgeCache($userId);
+        
+        // Clear dashboard stats cache for current user
+        StatsOverview::clearCache($userId);
     }
 }

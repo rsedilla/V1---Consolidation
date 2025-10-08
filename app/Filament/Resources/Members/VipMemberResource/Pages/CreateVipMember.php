@@ -5,8 +5,10 @@ namespace App\Filament\Resources\Members\VipMemberResource\Pages;
 use App\Filament\Resources\Members\VipMemberResource;
 use App\Filament\Traits\HandlesDatabaseErrors;
 use App\Services\MemberValidationService;
+use App\Livewire\StatsOverview;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class CreateVipMember extends CreateRecord
 {
@@ -39,5 +41,15 @@ class CreateVipMember extends CreateRecord
         }
         
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        // Clear navigation badge cache for current user
+        $userId = Auth::id();
+        VipMemberResource::clearNavigationBadgeCache($userId);
+        
+        // Clear dashboard stats cache for current user
+        StatsOverview::clearCache($userId);
     }
 }

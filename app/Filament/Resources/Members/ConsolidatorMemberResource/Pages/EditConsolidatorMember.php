@@ -5,10 +5,12 @@ namespace App\Filament\Resources\Members\ConsolidatorMemberResource\Pages;
 use App\Filament\Resources\Members\ConsolidatorMemberResource;
 use App\Filament\Traits\HandlesDatabaseErrors;
 use App\Services\MemberValidationService;
+use App\Livewire\StatsOverview;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class EditConsolidatorMember extends EditRecord
 {
@@ -20,7 +22,13 @@ class EditConsolidatorMember extends EditRecord
     {
         return [
             ViewAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->after(function () {
+                    // Clear caches after deletion
+                    $userId = Auth::id();
+                    ConsolidatorMemberResource::clearNavigationBadgeCache($userId);
+                    StatsOverview::clearCache($userId);
+                }),
         ];
     }
 
@@ -74,5 +82,15 @@ class EditConsolidatorMember extends EditRecord
         }
         
         return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        // Clear navigation badge cache for current user
+        $userId = Auth::id();
+        ConsolidatorMemberResource::clearNavigationBadgeCache($userId);
+        
+        // Clear dashboard stats cache for current user
+        StatsOverview::clearCache($userId);
     }
 }
