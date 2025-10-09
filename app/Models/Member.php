@@ -199,31 +199,4 @@ class Member extends Model
         
         return $query->exists();
     }
-
-    /**
-     * Scope to get members who are NOT in StartUpYourNewLife (New Life Training)
-     * Used to show only available VIPs for New Life Training enrollment
-     */
-    public function scopeWithoutNewLifeTraining($query)
-    {
-        return $query->whereDoesntHave('startUpYourNewLife');
-    }
-
-    /**
-     * Scope to get members who are NOT in SundayService
-     * Used to show only available VIPs for Sunday Service enrollment
-     */
-    public function scopeWithoutSundayService($query)
-    {
-        return $query->whereDoesntHave('sundayServices');
-    }
-
-    /**
-     * Scope to get members who are NOT in CellGroup
-     * Used to show only available VIPs for Cell Group enrollment
-     */
-    public function scopeWithoutCellGroup($query)
-    {
-        return $query->whereDoesntHave('cellGroups');
-    }
 }
