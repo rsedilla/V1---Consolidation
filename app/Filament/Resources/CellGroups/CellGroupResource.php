@@ -74,4 +74,34 @@ class CellGroupResource extends Resource
             'edit' => EditCellGroup::route('/{record}/edit'),
         ];
     }
+
+    /**
+     * Get navigation badge showing count of Cell Group records
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        $user = Auth::user();
+        
+        // Cache badge count for 5 minutes per user
+        $cacheKey = $user instanceof User && $user->isLeader() && $user->leaderRecord
+            ? "nav_badge_cellgroup_leader_{$user->id}"
+            : "nav_badge_cellgroup_admin";
+        
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () {
+            // Use the same hierarchy filtering logic as the main query
+            return static::getEloquentQuery()->count();
+        });
+    }
+    
+    /**
+     * Clear navigation badge cache for a specific user or all users
+     */
+    public static function clearNavigationBadgeCache($userId = null): void
+    {
+        if ($userId) {
+            \Illuminate\Support\Facades\Cache::forget("nav_badge_cellgroup_leader_{$userId}");
+        } else {
+            \Illuminate\Support\Facades\Cache::forget("nav_badge_cellgroup_admin");
+        }
+    }
 }

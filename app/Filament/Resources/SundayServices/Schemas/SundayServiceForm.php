@@ -17,7 +17,7 @@ class SundayServiceForm
     {
         return $schema
             ->components([
-                self::getVipMemberField(),
+                self::getVipMemberFieldForSundayService(),
                 
                 Textarea::make('notes')
                     ->label('General Notes')

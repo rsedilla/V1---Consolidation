@@ -18,7 +18,7 @@ class CellGroupForm
     {
         return $schema
             ->components([
-                self::getVipMemberField(),
+                self::getVipMemberFieldForCellGroup(),
                 
                 Textarea::make('notes')
                     ->label('Notes')

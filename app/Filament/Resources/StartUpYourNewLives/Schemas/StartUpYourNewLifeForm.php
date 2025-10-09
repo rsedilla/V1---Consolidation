@@ -17,7 +17,7 @@ class StartUpYourNewLifeForm
     {
         return $schema
             ->components([
-                self::getVipMemberField(),
+                self::getVipMemberFieldForNewLife(),
                 
                 Textarea::make('notes')
                     ->label('General Notes')
