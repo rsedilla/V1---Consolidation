@@ -8,6 +8,7 @@ use App\Filament\Resources\Members\ConsolidatorMemberResource\Pages\ListConsolid
 use App\Filament\Resources\Members\Schemas\ConsolidatorMemberForm;
 use App\Filament\Resources\Members\Tables\ConsolidatorMembersTable;
 use App\Filament\Traits\HasMemberSearch;
+use App\Filament\Traits\HasNavigationBadge;
 use App\Models\Member;
 use App\Models\User;
 use BackedEnum;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ConsolidatorMemberResource extends BaseMemberResource
 {
-    use HasMemberSearch;
+    use HasMemberSearch, HasNavigationBadge;
     protected static ?string $model = Member::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
@@ -85,35 +86,8 @@ class ConsolidatorMemberResource extends BaseMemberResource
         return true;
     }
 
-    public static function getNavigationBadge(): ?string
+    protected static function getNavigationBadgeCacheKey(): string
     {
-        $user = Auth::user();
-        
-        // Cache badge count for 5 minutes per user
-        $cacheKey = $user instanceof User && $user->leaderRecord
-            ? "nav_badge_consolidator_leader_{$user->id}"
-            : "nav_badge_consolidator_admin";
-        
-        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($user) {
-            if ($user instanceof User && $user->leaderRecord) {
-                // Use the same hierarchy filtering logic as the main query
-                return static::getEloquentQuery()->count();
-            }
-            
-            // For admin users, show total Consolidator count (using optimized scope)
-            return Member::consolidators()->count();
-        });
-    }
-    
-    /**
-     * Clear navigation badge cache for a specific user or all users
-     */
-    public static function clearNavigationBadgeCache($userId = null): void
-    {
-        if ($userId) {
-            \Illuminate\Support\Facades\Cache::forget("nav_badge_consolidator_leader_{$userId}");
-        } else {
-            \Illuminate\Support\Facades\Cache::forget("nav_badge_consolidator_admin");
-        }
+        return 'nav_badge_consolidator';
     }
 }

@@ -9,6 +9,7 @@ use App\Filament\Resources\Members\VipMemberResource\Pages\ViewVipMember;
 use App\Filament\Resources\Members\Schemas\MemberForm;
 use App\Filament\Resources\Members\Tables\VipMembersTable;
 use App\Filament\Traits\HasMemberSearch;
+use App\Filament\Traits\HasNavigationBadge;
 use App\Models\Member;
 use App\Models\User;
 use BackedEnum;
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class VipMemberResource extends BaseMemberResource
 {
-    use HasMemberSearch;
+    use HasMemberSearch, HasNavigationBadge;
     protected static ?string $model = Member::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
@@ -106,35 +107,8 @@ class VipMemberResource extends BaseMemberResource
         return true;
     }
 
-    public static function getNavigationBadge(): ?string
+    protected static function getNavigationBadgeCacheKey(): string
     {
-        $user = Auth::user();
-        
-        // Cache badge count for 5 minutes per user
-        $cacheKey = $user instanceof User && $user->isLeader() && $user->leaderRecord
-            ? "nav_badge_vip_leader_{$user->id}"
-            : "nav_badge_vip_admin";
-        
-        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($user) {
-            if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
-                // Use the same hierarchy filtering logic as the main query
-                return static::getEloquentQuery()->count();
-            }
-            
-            // For admin users, show total VIP count (using optimized scope)
-            return Member::vips()->count();
-        });
-    }
-    
-    /**
-     * Clear navigation badge cache for a specific user or all users
-     */
-    public static function clearNavigationBadgeCache($userId = null): void
-    {
-        if ($userId) {
-            \Illuminate\Support\Facades\Cache::forget("nav_badge_vip_leader_{$userId}");
-        } else {
-            \Illuminate\Support\Facades\Cache::forget("nav_badge_vip_admin");
-        }
+        return 'nav_badge_vip';
     }
 }

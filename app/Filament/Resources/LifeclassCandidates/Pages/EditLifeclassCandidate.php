@@ -3,30 +3,20 @@
 namespace App\Filament\Resources\LifeclassCandidates\Pages;
 
 use App\Filament\Resources\LifeclassCandidates\LifeclassCandidateResource;
+use App\Filament\Traits\ClearsNavigationBadgeCache;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
 
 class EditLifeclassCandidate extends EditRecord
 {
+    use ClearsNavigationBadgeCache;
+    
     protected static string $resource = LifeclassCandidateResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make()
-                ->after(function () {
-                    // Clear navigation badge cache after deleting record
-                    $userId = Auth::id();
-                    LifeclassCandidateResource::clearNavigationBadgeCache($userId);
-                }),
+            $this->makeDeleteActionWithBadgeClear(DeleteAction::make()),
         ];
-    }
-
-    protected function afterSave(): void
-    {
-        // Clear navigation badge cache after saving changes
-        $userId = Auth::id();
-        LifeclassCandidateResource::clearNavigationBadgeCache($userId);
     }
 }

@@ -3,30 +3,20 @@
 namespace App\Filament\Resources\CellGroups\Pages;
 
 use App\Filament\Resources\CellGroups\CellGroupResource;
+use App\Filament\Traits\ClearsNavigationBadgeCache;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
 
 class EditCellGroup extends EditRecord
 {
+    use ClearsNavigationBadgeCache;
+    
     protected static string $resource = CellGroupResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make()
-                ->after(function () {
-                    // Clear navigation badge cache after deleting record
-                    $userId = Auth::id();
-                    CellGroupResource::clearNavigationBadgeCache($userId);
-                }),
+            $this->makeDeleteActionWithBadgeClear(DeleteAction::make()),
         ];
-    }
-
-    protected function afterSave(): void
-    {
-        // Clear navigation badge cache after saving changes
-        $userId = Auth::id();
-        CellGroupResource::clearNavigationBadgeCache($userId);
     }
 }
