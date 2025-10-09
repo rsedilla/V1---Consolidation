@@ -36,31 +36,8 @@ class StatsOverview extends StatsOverviewWidget
         $stats = [];
         
         // Determine which leaders to show based on user role
-        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
-            // Leader sees their own hierarchy only
-            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
-            
-            // Show total VIPs under this leader
-            $stats[] = Stat::make('My Total VIPs', Member::vips()->underLeaders($visibleLeaderIds)->count())
-                ->description('VIP members under my leadership')
-                ->descriptionIcon('heroicon-o-user-group')
-                ->color('success');
-            
-            // Show Lifeclass Candidates under this leader (replaces Consolidators card)
-            $stats[] = Stat::make('My Lifeclass Candidates', LifeclassCandidate::underLeaders($visibleLeaderIds)->count())
-                ->description('Qualified candidates from my members')
-                ->descriptionIcon('heroicon-o-star')
-                ->color('warning');
-            
-            // Get only the DIRECT children (direct 12) of this leader
-            $leaders = G12Leader::with('user')
-                ->where('parent_id', $user->leaderRecord->id) // Only direct children
-                ->whereHas('user')
-                ->get()
-                ->sortBy(function($leader) {
-                    return $leader->user->name ?? '';
-                });
-        } else {
+        // IMPORTANT: Check isAdmin() FIRST before isLeader() because Oriel can be both
+        if ($user instanceof User && $user->isAdmin()) {
             // Admin sees all leaders and global stats
             $stats[] = Stat::make('Total VIPs', Member::vips()->count())
                 ->description('All active VIP members')
@@ -95,6 +72,33 @@ class StatsOverview extends StatsOverviewWidget
                         return $leader->user->name ?? '';
                     });
             }
+        } elseif ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+            // Leader sees their own hierarchy only
+            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
+            
+            // Show total VIPs under this leader
+            $stats[] = Stat::make('My Total VIPs', Member::vips()->underLeaders($visibleLeaderIds)->count())
+                ->description('VIP members under my leadership')
+                ->descriptionIcon('heroicon-o-user-group')
+                ->color('success');
+            
+            // Show Lifeclass Candidates under this leader (replaces Consolidators card)
+            $stats[] = Stat::make('My Lifeclass Candidates', LifeclassCandidate::underLeaders($visibleLeaderIds)->count())
+                ->description('Qualified candidates from my members')
+                ->descriptionIcon('heroicon-o-star')
+                ->color('warning');
+            
+            // Get only the DIRECT children (direct 12) of this leader
+            $leaders = G12Leader::with('user')
+                ->where('parent_id', $user->leaderRecord->id) // Only direct children
+                ->whereHas('user')
+                ->get()
+                ->sortBy(function($leader) {
+                    return $leader->user->name ?? '';
+                });
+        } else {
+            // No leader record or not authenticated properly
+            $leaders = collect();
         }
         
         // Per-leader VIP count cards (sorted alphabetically)
