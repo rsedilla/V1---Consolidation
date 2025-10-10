@@ -40,29 +40,29 @@ class CellGroupsTable
                 
                 // Individual Cell Group Session Columns (C1-C4)
                 TextColumn::make('cell_group_1_date')
-                    ->label('Cell Group (1)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('C1')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 TextColumn::make('cell_group_2_date')
-                    ->label('Cell Group (2)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('C2')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 TextColumn::make('cell_group_3_date')
-                    ->label('Cell Group (3)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('C3')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 TextColumn::make('cell_group_4_date')
-                    ->label('Cell Group (4)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('C4')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 
                 TextColumn::make('notes')
                     ->label('Notes')

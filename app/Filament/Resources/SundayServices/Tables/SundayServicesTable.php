@@ -40,29 +40,29 @@ class SundayServicesTable
                 
                 // Individual Sunday Service Session Columns (S1-S4)
                 TextColumn::make('sunday_service_1_date')
-                    ->label('Sunday Service (1)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('S1')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 TextColumn::make('sunday_service_2_date')
-                    ->label('Sunday Service (2)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('S2')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 TextColumn::make('sunday_service_3_date')
-                    ->label('Sunday Service (3)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('S3')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 TextColumn::make('sunday_service_4_date')
-                    ->label('Sunday Service (4)')
-                    ->formatStateUsing(fn ($state) => $state ? 'ok' : 'n/a')
-                    ->badge()
+                    ->label('S4')
+                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->placeholder('n/a'),
+                    ->sortable()
+                    ->alignCenter(),
                 
                 TextColumn::make('notes')
                     ->label('Notes')

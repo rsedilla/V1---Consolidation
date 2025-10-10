@@ -5,12 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use App\Traits\SecureQueryTrait;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SecureQueryTrait;
+
+    /**
+     * Instance cache for visible leader IDs to prevent duplicate queries in same request
+     */
+    private $visibleLeaderIdsCache = null;
 
     /**
      * The attributes that are mass assignable.
@@ -131,8 +137,20 @@ class User extends Authenticatable
     }
 
     /**
+     * Get cached visible leader IDs to prevent duplicate hierarchy traversal in same request
+     */
+    private function getVisibleLeaderIds(): array
+    {
+        if ($this->visibleLeaderIdsCache === null) {
+            $this->visibleLeaderIdsCache = $this->leaderRecord->getAllDescendantIds();
+        }
+        return $this->visibleLeaderIdsCache;
+    }
+
+    /**
      * Get available G12 leaders for form selection based on user role
      * Leaders can only select from their hierarchy, admins can select any
+     * Results are cached for 30 minutes to improve form load performance
      */
     public function getAvailableG12Leaders(): array
     {
@@ -148,31 +166,38 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all G12 leaders for admin users
+     * Get all G12 leaders for admin users (cached)
      */
     private function getAllG12Leaders(): array
     {
-        return G12Leader::orderBy('name')
-            ->pluck('name', 'id')
-            ->toArray();
+        return Cache::remember('all_g12_leaders', 1800, function () {
+            return G12Leader::orderBy('name')
+                ->pluck('name', 'id')
+                ->toArray();
+        });
     }
 
     /**
-     * Get G12 leaders from user's hierarchy
+     * Get G12 leaders from user's hierarchy (cached)
      */
     private function getHierarchyG12Leaders(): array
     {
-        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        $cacheKey = "user_{$this->id}_available_leaders";
         
-        return G12Leader::whereIn('id', $visibleLeaderIds)
-            ->orderBy('name')
-            ->pluck('name', 'id')
-            ->toArray();
+        return Cache::remember($cacheKey, 1800, function () {
+            $visibleLeaderIds = $this->getVisibleLeaderIds();
+            
+            return G12Leader::whereIn('id', $visibleLeaderIds)
+                ->orderBy('name')
+                ->pluck('name', 'id')
+                ->toArray();
+        });
     }
 
     /**
      * Get available consolidators for form selection based on user role
      * Leaders see consolidators in their entire hierarchy (themselves + all descendants)
+     * Results are cached for 30 minutes to improve form load performance
      */
     public function getAvailableConsolidators(): array
     {
@@ -188,40 +213,68 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all consolidators for admin users
+     * Get all consolidators for admin users (cached)
      */
     private function getAllConsolidators(): array
     {
-        return Member::consolidators()
-            ->orderBy('first_name')
-            ->get()
-            ->mapWithKeys(function ($member) {
-                return [$member->id => $this->formatMemberName($member)];
-            })
-            ->toArray();
+        return Cache::remember('all_consolidators', 1800, function () {
+            return Member::consolidators()
+                ->select('id', 'first_name', 'last_name') // Only needed columns
+                ->orderBy('first_name')
+                ->get()
+                ->mapWithKeys(function ($member) {
+                    return [$member->id => $this->formatMemberName($member)];
+                })
+                ->toArray();
+        });
     }
 
     /**
-     * Get consolidators from user's hierarchy
+     * Get consolidators from user's hierarchy (cached & optimized)
      * Excludes the logged-in user from appearing in their own consolidator search options
      */
     private function getHierarchyConsolidators(): array
     {
-        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        $cacheKey = "user_{$this->id}_available_consolidators";
         
-        $consolidators = Member::consolidators()
-            ->whereIn('g12_leader_id', $visibleLeaderIds)
-            ->orderBy('first_name')
-            ->get();
-
-        return $consolidators->mapWithKeys(function ($member) {
-            // Exclude self from search options - users cannot see themselves in consolidator dropdown
-            if ($this->isLeader() && $this->isSamePerson($member)) {
-                return []; // Skip this member (self) - won't appear in consolidator search field
-            }
+        return Cache::remember($cacheKey, 1800, function () {
+            $visibleLeaderIds = $this->getVisibleLeaderIds();
             
-            return [$member->id => $this->formatMemberName($member)];
-        })->toArray();
+            // Eager load only necessary columns to reduce memory usage
+            $consolidators = Member::consolidators()
+                ->whereIn('g12_leader_id', $visibleLeaderIds)
+                ->select('id', 'first_name', 'last_name', 'email') // Only needed columns
+                ->orderBy('first_name')
+                ->get();
+            
+            // Pre-compute comparison values for better performance
+            $userEmail = strtolower(trim($this->email ?? ''));
+            $userName = strtolower(trim($this->name ?? ''));
+
+            return $consolidators
+                ->reject(function ($member) use ($userEmail, $userName) {
+                    // Exclude self from search options - fast email comparison first
+                    if (!empty($member->email) && !empty($userEmail)) {
+                        if (strtolower(trim($member->email)) === $userEmail) {
+                            return true;
+                        }
+                    }
+                    
+                    // Fallback: name comparison
+                    if (!empty($userName)) {
+                        $memberFullName = strtolower(trim("{$member->first_name} {$member->last_name}"));
+                        if ($memberFullName === $userName) {
+                            return true;
+                        }
+                    }
+                    
+                    return false;
+                })
+                ->mapWithKeys(function ($member) {
+                    return [$member->id => $this->formatMemberName($member)];
+                })
+                ->toArray();
+        });
     }
 
     /**
@@ -275,11 +328,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get members from user's hierarchy
+     * Get members from user's hierarchy (uses instance cache)
      */
     private function getHierarchyMembers()
     {
-        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        $visibleLeaderIds = $this->getVisibleLeaderIds();
         return Member::whereIn('g12_leader_id', $visibleLeaderIds);
     }
 
@@ -308,12 +361,44 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if member is in user's hierarchy
+     * Check if member is in user's hierarchy (uses instance cache)
      */
     private function isMemberInHierarchy(Member $member): bool
     {
-        $visibleLeaderIds = $this->leaderRecord->getAllDescendantIds();
+        $visibleLeaderIds = $this->getVisibleLeaderIds();
         return in_array($member->g12_leader_id, $visibleLeaderIds);
+    }
+
+    /**
+     * Clear all caches for this user
+     * Call this when user's G12 leader assignment changes
+     */
+    public static function clearUserCache($userId)
+    {
+        Cache::forget("user_{$userId}_available_leaders");
+        Cache::forget("user_{$userId}_available_consolidators");
+        
+        // Also clear global caches that might be affected
+        Cache::forget('all_g12_leaders');
+        Cache::forget('all_consolidators');
+    }
+
+    /**
+     * Boot method to handle cache invalidation
+     */
+    protected static function booted()
+    {
+        // Clear cache when user's G12 leader assignment changes
+        static::saved(function ($user) {
+            if ($user->isDirty('g12_leader_id') || $user->isDirty('role')) {
+                static::clearUserCache($user->id);
+            }
+        });
+
+        // Clear cache when user is deleted
+        static::deleted(function ($user) {
+            static::clearUserCache($user->id);
+        });
     }
 
     /**
