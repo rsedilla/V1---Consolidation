@@ -27,7 +27,7 @@ class CellGroupResource extends Resource
 
     protected static ?string $navigationLabel = 'Cell Groups';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 7;
 
     /**
      * Filter records based on user role and G12 leader assignment

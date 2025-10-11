@@ -27,7 +27,7 @@ class StartUpYourNewLifeResource extends Resource
 
     protected static ?string $navigationLabel = 'New Life Training';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 5;
 
     /**
      * Override the plural model label (used for page titles)

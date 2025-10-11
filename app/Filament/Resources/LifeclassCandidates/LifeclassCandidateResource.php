@@ -25,9 +25,9 @@ class LifeclassCandidateResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'Life Class Candidates';
+    protected static ?string $navigationLabel = 'Life Class';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 8;
 
     /**
      * Filter records based on user role and G12 leader assignment

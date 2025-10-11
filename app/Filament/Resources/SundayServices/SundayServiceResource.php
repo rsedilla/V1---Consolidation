@@ -27,7 +27,7 @@ class SundayServiceResource extends Resource
 
     protected static ?string $navigationLabel = 'Sunday Services';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 6;
 
     /**
      * Filter records based on user role and G12 leader assignment
