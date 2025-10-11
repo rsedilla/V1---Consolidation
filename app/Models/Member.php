@@ -14,6 +14,7 @@ class Member extends Model
         'middle_name',
         'last_name',
         'birthday',
+        'wedding_anniversary_date',
         'email',
         'phone',
         'address',
@@ -26,6 +27,8 @@ class Member extends Model
     ];
 
     protected $casts = [
+        'birthday' => 'date',
+        'wedding_anniversary_date' => 'date',
         'consolidation_date' => 'date',
     ];
 
@@ -67,6 +70,11 @@ class Member extends Model
     public function lifeclassCandidates()
     {
         return $this->hasMany(LifeclassCandidate::class);
+    }
+
+    public function sol1()
+    {
+        return $this->hasMany(Sol1::class);
     }
 
     public function vipStatus()
