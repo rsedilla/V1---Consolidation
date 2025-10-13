@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\CellGroups\Tables;
 
+
+use App\Filament\Traits\HasLessonTableColumns;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DeleteAction;
@@ -9,8 +11,10 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
+
 class CellGroupsTable
 {
+    use HasLessonTableColumns;
     public static function configure(Table $table): Table
     {
         return $table
@@ -37,33 +41,10 @@ class CellGroupsTable
                     ->placeholder('N/A')
                     ->searchable(false)
                     ->sortable(false),
-                
-                // Individual Cell Group Session Columns (C1-C4)
-                TextColumn::make('cell_group_1_date')
-                    ->label('C1')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('cell_group_2_date')
-                    ->label('C2')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('cell_group_3_date')
-                    ->label('C3')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('cell_group_4_date')
-                    ->label('C4')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
+
+                // Individual Cell Group Session Columns (C1-C4) - Generated dynamically via trait
+                ...self::generateLessonColumns(4, 'cell_group_', 'C'),
+
                 TextColumn::make('notes')
                     ->label('Notes')
                     ->limit(30)
