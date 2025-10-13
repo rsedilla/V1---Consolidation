@@ -2,117 +2,39 @@
 
 namespace App\Filament\Resources\Members\Tables;
 
+use App\Filament\Traits\HasMemberTableColumns;
+use App\Filament\Traits\HasMemberDeletionAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use App\Services\MemberDeletionService;
 use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
 
 class MembersTable
 {
+    use HasMemberTableColumns;
+    use HasMemberDeletionAction;
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('first_name')
-                    ->label('First Name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('last_name')
-                    ->label('Last Name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('memberType.name')
-                    ->label('Member Type')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('status.name')
-                    ->label('Status')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('g12Leader.name')
-                    ->label('G12 Leader')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('consolidator_name')
-                    ->label('Consolidator')
-                    ->getStateUsing(function ($record) {
-                        if ($record->consolidator) {
-                            return $record->consolidator->first_name . ' ' . $record->consolidator->last_name;
-                        }
-                        return 'N/A';
-                    })
-                    ->placeholder('N/A')
-                    ->searchable(false)
-                    ->sortable(query: function ($query, $direction) {
-                        return $query->leftJoin('members as consolidators', 'members.consolidator_id', '=', 'consolidators.id')
-                            ->orderBy('consolidators.first_name', $direction)
-                            ->orderBy('consolidators.last_name', $direction);
-                    }),
-                TextColumn::make('vipStatus.name')
-                    ->label('VIP Status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'New Believer' => 'success',
-                        'Recommitment' => 'warning', 
-                        'Other Church' => 'info',
-                        default => 'secondary',
-                    })
-                    ->placeholder('Not Set')
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label('Joined')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                self::makeFirstNameColumn(),
+                self::makeLastNameColumn(),
+                self::makeMemberTypeColumn(),
+                self::makeStatusColumn(),
+                self::makeG12LeaderColumn(),
+                self::makeConsolidatorColumn(),
+                self::makeVipStatusColumn(),
+                self::makeCreatedAtColumn(),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make()
-                    ->requiresConfirmation()
-                    ->modalHeading('Delete Member')
-                    ->modalDescription('Are you sure you want to permanently delete this member? This action cannot be undone and will permanently remove all member data from the system.')
-                    ->modalSubmitActionLabel('Yes, Delete Permanently')
-                    ->modalIcon('heroicon-o-exclamation-triangle')
-                    ->color('danger')
-                    ->before(function ($record) {
-                        // Use MemberDeletionService for safe deletion with dependency handling
-                        $deletionService = app(MemberDeletionService::class);
-                        $result = $deletionService->safeDelete($record);
-                        
-                        if (!$result['success']) {
-                            throw new \Exception($result['message']);
-                        }
-                        
-                        // Prevent the default delete action since we already handled it
-                        return false;
-                    }),
+                self::makeMemberDeleteAction('Member'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->requiresConfirmation()
-                        ->modalHeading('Delete Selected Members')
-                        ->modalDescription('Are you sure you want to permanently delete the selected members? This action cannot be undone and will permanently remove all member data from the system.')
-                        ->modalSubmitActionLabel('Yes, Delete Permanently')
-                        ->modalIcon('heroicon-o-exclamation-triangle')
-                        ->color('danger')
-                        ->action(function ($records) {
-                            // Use MemberDeletionService for batch safe deletion
-                            $deletionService = app(MemberDeletionService::class);
-                            $memberIds = collect($records)->pluck('id')->toArray();
-                            
-                            $result = $deletionService->batchDelete($memberIds);
-                            
-                            if (!$result['success']) {
-                                throw new \Exception($result['message']);
-                            }
-                        }),
+                    self::makeMemberBulkDeleteAction('Members'),
                 ]),
             ])
             ->defaultSort('last_name', 'asc');
