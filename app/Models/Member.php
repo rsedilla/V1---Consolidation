@@ -187,7 +187,7 @@ class Member extends Model
      */
     public function scopeNotInLifeClass($query)
     {
-        return $query->whereDoesntHave('lifeclassCandidate');
+        return $query->whereDoesntHave('lifeclassCandidates');
     }
 
     /**
