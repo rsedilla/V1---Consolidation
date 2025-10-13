@@ -191,6 +191,17 @@ class Member extends Model
     }
 
     /**
+     * Scope to exclude members who have been promoted to SOL (any level)
+     * Used to hide members who have graduated to SOL training
+     */
+    public function scopeNotInSol($query)
+    {
+        return $query->whereDoesntHave('solProfiles', function ($q) {
+            $q->where('current_sol_level_id', '>=', 1);
+        });
+    }
+
+    /**
      * Check if this member is qualified for Life Class
      * Uses MemberCompletionService for the logic
      */

@@ -64,10 +64,12 @@ class VipMemberResource extends BaseMemberResource
 
     /**
      * Apply VIP member type filter
+     * Also hides members who have progressed to SOL training
      */
     protected static function applyMemberTypeFilter(Builder $query): void
     {
-        $query->vips();
+        $query->vips()
+              ->notInSol(); // Hide members promoted to SOL 1 or higher
     }
 
     /**
