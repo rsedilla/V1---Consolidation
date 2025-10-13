@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LifeclassCandidates\Tables;
 
 use App\Filament\Traits\HasSol1Promotion;
+use App\Filament\Traits\HasLessonTableColumns;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -12,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 class LifeclassCandidatesTable
 {
     use HasSol1Promotion;
+    use HasLessonTableColumns;
     public static function configure(Table $table): Table
     {
         return $table
@@ -34,31 +36,8 @@ class LifeclassCandidatesTable
                     ->searchable(['consolidator.first_name', 'consolidator.last_name'])
                     ->sortable(),
                 
-                // Individual Life Class Lesson Status Columns (L1-L9)
-                TextColumn::make('lesson_1_completion_date')
-                    ->label('L1')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('lesson_2_completion_date')
-                    ->label('L2')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('lesson_3_completion_date')
-                    ->label('L3')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('lesson_4_completion_date')
-                    ->label('L4')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
+                // Individual Life Class Lesson Status Columns (L1-L4, Encounter, L6-L9) - Generated dynamically via trait
+                ...self::generateLessonColumns(4, 'lesson_', 'L'), // L1-L4
                 TextColumn::make('encounter_completion_date')
                     ->label('ENC')
                     ->formatStateUsing(fn ($state) => $state ? '✓' : '-')

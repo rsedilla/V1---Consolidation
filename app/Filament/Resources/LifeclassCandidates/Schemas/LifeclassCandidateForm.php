@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LifeclassCandidates\Schemas;
 
 use App\Filament\Traits\HasMemberFields;
+use App\Filament\Traits\HasLessonFormFields;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\Textarea;
 class LifeclassCandidateForm
 {
     use HasMemberFields;
+    use HasLessonFormFields;
 
     public static function configure(Schema $schema): Schema
     {
@@ -22,26 +24,34 @@ class LifeclassCandidateForm
                     ->label('Life Class Party Date')
                     ->helperText('Party date before Lesson 1 starts'),
                 
-                // Life Class Lesson Completion Tracking
-                DatePicker::make('lesson_1_completion_date')
-                    ->label('Lesson 1'),
-                DatePicker::make('lesson_2_completion_date')
-                    ->label('Lesson 2'),
-                DatePicker::make('lesson_3_completion_date')
-                    ->label('Lesson 3'),
-                DatePicker::make('lesson_4_completion_date')
-                    ->label('Lesson 4'),
+                // Life Class Lesson Completion Tracking (L1-L4, Encounter, L6-L9) - Generated dynamically via trait
+                ...self::generateLessonFields(4, [
+                    1 => 'Lesson 1',
+                    2 => 'Lesson 2',
+                    3 => 'Lesson 3',
+                    4 => 'Lesson 4',
+                ]),
                 DatePicker::make('encounter_completion_date')
                     ->label('Encounter')
+                    ->displayFormat('Y-m-d')
+                    ->nullable()
                     ->helperText('Life Class Encounter Session'),
                 DatePicker::make('lesson_6_completion_date')
-                    ->label('Lesson 6'),
+                    ->label('Lesson 6')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
                 DatePicker::make('lesson_7_completion_date')
-                    ->label('Lesson 7'),
+                    ->label('Lesson 7')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
                 DatePicker::make('lesson_8_completion_date')
-                    ->label('Lesson 8'),
+                    ->label('Lesson 8')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
                 DatePicker::make('lesson_9_completion_date')
-                    ->label('Lesson 9'),
+                    ->label('Lesson 9')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
                 
                 DatePicker::make('graduation_date')
                     ->label('Life Class Graduation')

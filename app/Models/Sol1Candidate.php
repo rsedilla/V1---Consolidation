@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasLessonCompletion;
 use Illuminate\Database\Eloquent\Model;
 
 class Sol1Candidate extends Model
 {
+    use HasLessonCompletion;
     protected $table = 'sol_1_candidates';
     
     protected $fillable = [
@@ -79,20 +81,31 @@ class Sol1Candidate extends Model
     }
 
     /**
-     * Scope to get completed records (all 10 lessons done)
+     * Define lesson fields for HasLessonCompletion trait
+     * SOL 1 has 10 lessons: L1-L10
      */
-    public function scopeCompleted($query)
+    protected function getLessonFields(): array
     {
-        return $query->whereNotNull('lesson_1_completion_date')
-            ->whereNotNull('lesson_2_completion_date')
-            ->whereNotNull('lesson_3_completion_date')
-            ->whereNotNull('lesson_4_completion_date')
-            ->whereNotNull('lesson_5_completion_date')
-            ->whereNotNull('lesson_6_completion_date')
-            ->whereNotNull('lesson_7_completion_date')
-            ->whereNotNull('lesson_8_completion_date')
-            ->whereNotNull('lesson_9_completion_date')
-            ->whereNotNull('lesson_10_completion_date');
+        return [
+            'lesson_1_completion_date',
+            'lesson_2_completion_date',
+            'lesson_3_completion_date',
+            'lesson_4_completion_date',
+            'lesson_5_completion_date',
+            'lesson_6_completion_date',
+            'lesson_7_completion_date',
+            'lesson_8_completion_date',
+            'lesson_9_completion_date',
+            'lesson_10_completion_date',
+        ];
+    }
+
+    /**
+     * Define total lesson count for HasLessonCompletion trait
+     */
+    protected function getLessonCount(): int
+    {
+        return 10;
     }
 
     /**
@@ -119,63 +132,6 @@ class Sol1Candidate extends Model
         return $query->whereHas('solProfile', function ($q) {
             $q->where('is_cell_leader', true);
         });
-    }
-
-    /**
-     * Helper Methods
-     */
-    
-    /**
-     * Check if all 10 SOL 1 lessons are completed
-     */
-    public function isCompleted(): bool
-    {
-        return !is_null($this->lesson_1_completion_date) &&
-               !is_null($this->lesson_2_completion_date) &&
-               !is_null($this->lesson_3_completion_date) &&
-               !is_null($this->lesson_4_completion_date) &&
-               !is_null($this->lesson_5_completion_date) &&
-               !is_null($this->lesson_6_completion_date) &&
-               !is_null($this->lesson_7_completion_date) &&
-               !is_null($this->lesson_8_completion_date) &&
-               !is_null($this->lesson_9_completion_date) &&
-               !is_null($this->lesson_10_completion_date);
-    }
-
-    /**
-     * Get completion count (how many lessons completed out of 10)
-     */
-    public function getCompletionCount(): int
-    {
-        $count = 0;
-        $lessons = [
-            'lesson_1_completion_date',
-            'lesson_2_completion_date',
-            'lesson_3_completion_date',
-            'lesson_4_completion_date',
-            'lesson_5_completion_date',
-            'lesson_6_completion_date',
-            'lesson_7_completion_date',
-            'lesson_8_completion_date',
-            'lesson_9_completion_date',
-            'lesson_10_completion_date',
-        ];
-
-        foreach ($lessons as $lesson) {
-            if (!is_null($this->$lesson)) {
-                $count++;
-            }
-        }
-
-        return $count;
-    }
-
-    /**
-     * Get completion percentage
-     */
-    public function getCompletionPercentage(): float
-    {
-        return ($this->getCompletionCount() / 10) * 100;
     }
 
     /**

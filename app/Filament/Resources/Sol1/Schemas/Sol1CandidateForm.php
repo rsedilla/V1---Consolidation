@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Sol1\Schemas;
 
+use App\Filament\Traits\HasLessonFormFields;
 use App\Models\SolProfile;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -10,6 +11,7 @@ use Filament\Schemas\Schema;
 
 class Sol1CandidateForm
 {
+    use HasLessonFormFields;
     public static function configure(Schema $schema): Schema
     {
         return $schema->schema([
@@ -35,55 +37,19 @@ class Sol1CandidateForm
                 ->default(now())
                 ->required(),
             
-            DatePicker::make('lesson_1_completion_date')
-                ->label('Lesson 1')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_2_completion_date')
-                ->label('Lesson 2')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_3_completion_date')
-                ->label('Lesson 3')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_4_completion_date')
-                ->label('Lesson 4')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_5_completion_date')
-                ->label('Lesson 5')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_6_completion_date')
-                ->label('Lesson 6')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_7_completion_date')
-                ->label('Lesson 7')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_8_completion_date')
-                ->label('Lesson 8')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_9_completion_date')
-                ->label('Lesson 9')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
-            
-            DatePicker::make('lesson_10_completion_date')
-                ->label('Lesson 10')
-                ->displayFormat('Y-m-d')
-                ->nullable(),
+            // SOL 1 Lesson Fields (L1-L10)
+            ...self::generateLessonFields(10, [
+                1 => 'Lesson 1',
+                2 => 'Lesson 2',
+                3 => 'Lesson 3',
+                4 => 'Lesson 4',
+                5 => 'Lesson 5',
+                6 => 'Lesson 6',
+                7 => 'Lesson 7',
+                8 => 'Lesson 8',
+                9 => 'Lesson 9',
+                10 => 'Lesson 10',
+            ]),
             
             DatePicker::make('graduation_date')
                 ->label('Graduation Date')

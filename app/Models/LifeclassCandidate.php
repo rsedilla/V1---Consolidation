@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasLessonCompletion;
 use Illuminate\Database\Eloquent\Model;
 
 class LifeclassCandidate extends Model
 {
+    use HasLessonCompletion;
     protected $fillable = [
         'member_id',
         'life_class_party_date',
@@ -66,44 +68,12 @@ class LifeclassCandidate extends Model
     }
 
     /**
-     * Scope to get records where ALL 9 lessons are completed
+     * Define lesson fields for HasLessonCompletion trait
+     * Life Class has 9 lessons: L1-L4, Encounter, L6-L9 (no L5)
      */
-    public function scopeCompleted($query)
+    protected function getLessonFields(): array
     {
-        return $query->whereNotNull('lesson_1_completion_date')
-            ->whereNotNull('lesson_2_completion_date')
-            ->whereNotNull('lesson_3_completion_date')
-            ->whereNotNull('lesson_4_completion_date')
-            ->whereNotNull('encounter_completion_date')
-            ->whereNotNull('lesson_6_completion_date')
-            ->whereNotNull('lesson_7_completion_date')
-            ->whereNotNull('lesson_8_completion_date')
-            ->whereNotNull('lesson_9_completion_date');
-    }
-
-    /**
-     * Check if all 9 Life Class lessons are completed
-     */
-    public function isCompleted(): bool
-    {
-        return !is_null($this->lesson_1_completion_date) &&
-               !is_null($this->lesson_2_completion_date) &&
-               !is_null($this->lesson_3_completion_date) &&
-               !is_null($this->lesson_4_completion_date) &&
-               !is_null($this->encounter_completion_date) &&
-               !is_null($this->lesson_6_completion_date) &&
-               !is_null($this->lesson_7_completion_date) &&
-               !is_null($this->lesson_8_completion_date) &&
-               !is_null($this->lesson_9_completion_date);
-    }
-
-    /**
-     * Get completion count (how many lessons completed out of 9)
-     */
-    public function getCompletionCount(): int
-    {
-        $count = 0;
-        $lessons = [
+        return [
             'lesson_1_completion_date',
             'lesson_2_completion_date',
             'lesson_3_completion_date',
@@ -114,22 +84,14 @@ class LifeclassCandidate extends Model
             'lesson_8_completion_date',
             'lesson_9_completion_date',
         ];
-
-        foreach ($lessons as $lesson) {
-            if (!is_null($this->$lesson)) {
-                $count++;
-            }
-        }
-
-        return $count;
     }
 
     /**
-     * Get completion percentage
+     * Define total lesson count for HasLessonCompletion trait
      */
-    public function getCompletionPercentage(): float
+    protected function getLessonCount(): int
     {
-        return ($this->getCompletionCount() / 9) * 100;
+        return 9;
     }
 
     /**

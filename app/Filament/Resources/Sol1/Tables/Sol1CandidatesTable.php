@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Sol1\Tables;
 
+use App\Filament\Traits\HasLessonTableColumns;
 use App\Models\Sol1Candidate;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Sol1CandidatesTable
 {
+    use HasLessonTableColumns;
     public static function configure(Table $table): Table
     {
         return $table
@@ -35,76 +37,8 @@ class Sol1CandidatesTable
                     ->searchable()
                     ->sortable(),
                 
-                // Individual SOL 1 Lesson Status Columns (L1-L10)
-                TextColumn::make('lesson_1_completion_date')
-                    ->label('L1')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_2_completion_date')
-                    ->label('L2')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_3_completion_date')
-                    ->label('L3')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_4_completion_date')
-                    ->label('L4')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_5_completion_date')
-                    ->label('L5')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_6_completion_date')
-                    ->label('L6')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_7_completion_date')
-                    ->label('L7')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_8_completion_date')
-                    ->label('L8')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_9_completion_date')
-                    ->label('L9')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                
-                TextColumn::make('lesson_10_completion_date')
-                    ->label('L10')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
+                // SOL 1 Lesson Status Columns (L1-L10)
+                ...self::generateLessonColumns(10, 'lesson_', 'L'),
             ])
             ->filters([
                 //
