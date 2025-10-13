@@ -28,13 +28,23 @@ class CellGroupForm
                     ->label('Notes')
                     ->rows(3),
 
-                // Cell Group Session Tracking (C1-C4) - Generated dynamically via trait
-                ...self::generateLessonFields(4, [
-                    1 => 'Cell Group 1',
-                    2 => 'Cell Group 2',
-                    3 => 'Cell Group 3',
-                    4 => 'Cell Group 4',
-                ], 'cell_group_', 'C'),
+                // Cell Group Session Tracking (C1-C4)
+                DatePicker::make('cell_group_1_date')
+                    ->label('Cell Group 1')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
+                DatePicker::make('cell_group_2_date')
+                    ->label('Cell Group 2')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
+                DatePicker::make('cell_group_3_date')
+                    ->label('Cell Group 3')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
+                DatePicker::make('cell_group_4_date')
+                    ->label('Cell Group 4')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
             ]);
     }
 }

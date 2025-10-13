@@ -88,6 +88,8 @@ class SolProfileForm
                         ->pluck('name', 'id');
                 })
                 ->searchable()
+                ->preload()
+                ->helperText('Search by name to quickly find the G12 Leader')
                 ->required(),
             
             Select::make('current_sol_level_id')

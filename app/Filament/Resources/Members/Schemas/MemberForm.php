@@ -62,7 +62,10 @@ class MemberForm
                 Select::make('g12_leader_id')
                     ->label('G12 Leader')
                     ->options($user instanceof User ? $user->getAvailableG12Leaders() : [])
+                    ->searchable()
+                    ->preload()
                     ->placeholder($user instanceof User && $user->isLeader() ? 'Your G12 Leader will be auto-assigned' : 'Select G12 Leader')
+                    ->helperText('Search by name to quickly find the G12 Leader')
                     ->required($user instanceof User && $user->isAdmin()),
                 Select::make('consolidator_id')
                     ->label('Consolidator')

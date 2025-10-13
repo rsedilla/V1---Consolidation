@@ -25,13 +25,23 @@ class SundayServiceForm
                     ->label('General Notes')
                     ->rows(2),
 
-                // Sunday Service Session Tracking (S1-S4) - Generated dynamically via trait
-                ...self::generateLessonFields(4, [
-                    1 => 'Sunday Service 1',
-                    2 => 'Sunday Service 2',
-                    3 => 'Sunday Service 3',
-                    4 => 'Sunday Service 4',
-                ], 'sunday_service_', ''),
+                // Sunday Service Session Tracking (S1-S4)
+                DatePicker::make('sunday_service_1_date')
+                    ->label('Sunday Service 1')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
+                DatePicker::make('sunday_service_2_date')
+                    ->label('Sunday Service 2')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
+                DatePicker::make('sunday_service_3_date')
+                    ->label('Sunday Service 3')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
+                DatePicker::make('sunday_service_4_date')
+                    ->label('Sunday Service 4')
+                    ->displayFormat('Y-m-d')
+                    ->nullable(),
             ]);
     }
 }

@@ -34,9 +34,10 @@ class UserForm
                     ->label('Belongs to G12 Leader')
                     ->options(G12Leader::orderBy('name')->pluck('name', 'id'))
                     ->searchable()
+                    ->preload()
                     ->nullable()
                     ->placeholder('Select G12 Leader (optional)')
-                    ->helperText('Which G12 Leader this user belongs to (for data filtering and hierarchy)'),
+                    ->helperText('Search by name to quickly find the G12 Leader. Which G12 Leader this user belongs to (for data filtering and hierarchy)'),
                 DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
                     ->password()

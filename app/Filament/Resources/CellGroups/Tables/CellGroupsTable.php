@@ -42,8 +42,31 @@ class CellGroupsTable
                     ->searchable(false)
                     ->sortable(false),
 
-                // Individual Cell Group Session Columns (C1-C4) - Generated dynamically via trait
-                ...self::generateLessonColumns(4, 'cell_group_', 'C'),
+                // Individual Cell Group Session Columns (C1-C4)
+                TextColumn::make('cell_group_1_date')
+                    ->label('C1')
+                    ->formatStateUsing(fn($state) => $state ? '✓' : '-')
+                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->sortable()
+                    ->alignCenter(),
+                TextColumn::make('cell_group_2_date')
+                    ->label('C2')
+                    ->formatStateUsing(fn($state) => $state ? '✓' : '-')
+                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->sortable()
+                    ->alignCenter(),
+                TextColumn::make('cell_group_3_date')
+                    ->label('C3')
+                    ->formatStateUsing(fn($state) => $state ? '✓' : '-')
+                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->sortable()
+                    ->alignCenter(),
+                TextColumn::make('cell_group_4_date')
+                    ->label('C4')
+                    ->formatStateUsing(fn($state) => $state ? '✓' : '-')
+                    ->color(fn($state) => $state ? 'success' : 'gray')
+                    ->sortable()
+                    ->alignCenter(),
 
                 TextColumn::make('notes')
                     ->label('Notes')
