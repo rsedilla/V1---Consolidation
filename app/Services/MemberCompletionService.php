@@ -137,11 +137,16 @@ class MemberCompletionService
 
     /**
      * Get all VIP members who are qualified for Life Class
+     * Excludes members already enrolled in Life Class or promoted to SOL 1+
      */
     public static function getQualifiedVipMembers()
     {
         return Member::vips()
             ->with(['memberType', 'startUpYourNewLife', 'sundayServices', 'cellGroups'])
+            ->whereDoesntHave('lifeclassCandidates') // Not already in Life Class
+            ->whereDoesntHave('solProfiles', function ($q) { // Not promoted to SOL 1 or higher
+                $q->where('current_sol_level_id', '>=', 1);
+            })
             ->get()
             ->filter(function ($member) {
                 return self::isQualifiedForLifeClass($member);
