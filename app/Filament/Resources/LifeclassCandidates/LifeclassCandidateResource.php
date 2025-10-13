@@ -39,6 +39,10 @@ class LifeclassCandidateResource extends Resource
         // Eager load the member relationship to optimize database queries
         $query = parent::getEloquentQuery()->with(['member']);
         
+        // Hide candidates who have been promoted to SOL 1
+        // (Database records preserved, they just appear in SOL 1 Progress instead)
+        $query->notPromotedToSol1();
+        
         if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
             // Leaders see records for their hierarchy (including descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();

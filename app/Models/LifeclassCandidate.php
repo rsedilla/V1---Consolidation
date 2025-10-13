@@ -68,6 +68,17 @@ class LifeclassCandidate extends Model
     }
 
     /**
+     * Scope to get only candidates who have NOT been promoted to SOL 1
+     * Filters out students who already appear in SOL 1 Progress
+     */
+    public function scopeNotPromotedToSol1($query)
+    {
+        return $query->whereDoesntHave('member.solProfiles', function ($q) {
+            $q->where('current_sol_level_id', 1);
+        });
+    }
+
+    /**
      * Define lesson fields for HasLessonCompletion trait
      * Life Class has 9 lessons: L1-L4, Encounter, L6-L9 (no L5)
      */
