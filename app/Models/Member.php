@@ -182,6 +182,15 @@ class Member extends Model
     }
 
     /**
+     * Scope to exclude members who are currently enrolled in Life Class
+     * Used to hide completed training records once member progresses to Life Class
+     */
+    public function scopeNotInLifeClass($query)
+    {
+        return $query->whereDoesntHave('lifeclassCandidate');
+    }
+
+    /**
      * Check if this member is qualified for Life Class
      * Uses MemberCompletionService for the logic
      */

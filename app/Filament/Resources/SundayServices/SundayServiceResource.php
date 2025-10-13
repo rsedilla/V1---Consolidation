@@ -39,6 +39,12 @@ class SundayServiceResource extends Resource
         // Eager load the member and consolidator relationships to optimize database queries
         $query = parent::getEloquentQuery()->with(['member', 'member.consolidator']);
         
+        // Hide members who have progressed to Life Class
+        // (Database records preserved, they just appear in Life Class instead)
+        $query->whereHas('member', function ($q) {
+            $q->notInLifeClass();
+        });
+        
         if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
             // Leaders see records for their hierarchy (including descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
