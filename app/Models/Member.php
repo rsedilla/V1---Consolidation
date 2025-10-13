@@ -72,9 +72,15 @@ class Member extends Model
         return $this->hasMany(LifeclassCandidate::class);
     }
 
+    public function solProfiles()
+    {
+        return $this->hasMany(SolProfile::class);
+    }
+    
+    // Alias for backward compatibility
     public function sol1()
     {
-        return $this->hasMany(Sol1::class);
+        return $this->solProfiles();
     }
 
     public function vipStatus()

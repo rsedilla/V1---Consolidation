@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\Sol1\Tables;
+namespace App\Filament\Resources\SolProfiles\Tables;
 
-use App\Models\Sol1;
+use App\Models\SolProfile;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class Sol1Table
+class SolProfilesTable
 {
     public static function configure(Table $table): Table
     {
@@ -25,6 +25,20 @@ class Sol1Table
                     ->searchable()
                     ->sortable(),
                 
+                TextColumn::make('currentSolLevel.level_name')
+                    ->label('Current Level')
+                    ->badge()
+                    ->color(function (?SolProfile $record) {
+                        if (!$record || !$record->currentSolLevel) return 'secondary';
+                        return match($record->currentSolLevel->level_number) {
+                            1 => 'info',
+                            2 => 'warning',
+                            3 => 'success',
+                            default => 'secondary',
+                        };
+                    })
+                    ->sortable(),
+                
                 TextColumn::make('g12Leader.name')
                     ->label('G12 Leader')
                     ->searchable()
@@ -32,7 +46,7 @@ class Sol1Table
                 
                 BadgeColumn::make('is_cell_leader')
                     ->label('Cell Leader')
-                    ->getStateUsing(fn (?Sol1 $record) => $record?->is_cell_leader ? 'Yes' : 'No')
+                    ->getStateUsing(fn (?SolProfile $record) => $record?->is_cell_leader ? 'Yes' : 'No')
                     ->colors([
                         'success' => 'Yes',
                         'secondary' => 'No',
@@ -48,35 +62,30 @@ class Sol1Table
                 
                 TextColumn::make('completion_progress')
                     ->label('Progress')
-                    ->getStateUsing(function (?Sol1 $record) {
+                    ->getStateUsing(function (?SolProfile $record) {
                         if (!$record) return '0/10';
-                        $candidate = $record->sol1Candidate;
-                        if (!$candidate) {
-                            return '0/10';
-                        }
-                        return $candidate->getCompletionCount() . '/10';
+                        $progress = $record->getCompletionProgress();
+                        return $progress['completed'] . '/' . $progress['total'];
                     })
                     ->badge()
-                    ->color(function (?Sol1 $record) {
+                    ->color(function (?SolProfile $record) {
                         if (!$record) return 'secondary';
-                        $candidate = $record->sol1Candidate;
-                        if (!$candidate) return 'secondary';
+                        $progress = $record->getCompletionProgress();
                         
-                        $count = $candidate->getCompletionCount();
-                        if ($count >= 10) return 'success';
-                        if ($count >= 7) return 'warning';
+                        if ($progress['percentage'] >= 100) return 'success';
+                        if ($progress['percentage'] >= 70) return 'warning';
                         return 'secondary';
                     }),
                 
                 BadgeColumn::make('qualified_for_sol2')
                     ->label('SOL 2 Ready')
-                    ->getStateUsing(function (?Sol1 $record) {
+                    ->getStateUsing(function (?SolProfile $record) {
                         return $record?->isQualifiedForSol2() ? 'Qualified' : '';
                     })
                     ->colors([
                         'success' => 'Qualified',
                     ])
-                    ->visible(fn (?Sol1 $record) => $record?->isQualifiedForSol2() ?? false),
+                    ->visible(fn (?SolProfile $record) => $record?->isQualifiedForSol2() ?? false),
                 
                 TextColumn::make('created_at')
                     ->label('Enrolled')
@@ -84,6 +93,10 @@ class Sol1Table
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('current_sol_level_id')
+                    ->label('SOL Level')
+                    ->relationship('currentSolLevel', 'level_name'),
+                
                 SelectFilter::make('status')
                     ->relationship('status', 'name'),
                 
@@ -101,10 +114,10 @@ class Sol1Table
                     ),
             ])
             ->actions([
-                // Actions defined in ListSol1 page
+                // Actions defined in ListSolProfiles page
             ])
             ->bulkActions([
-                // Bulk actions defined in ListSol1 page
+                // Bulk actions defined in ListSolProfiles page
             ])
             ->defaultSort('created_at', 'desc');
     }

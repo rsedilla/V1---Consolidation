@@ -18,9 +18,9 @@ class LifeclassCandidateForm
             ->components([
                 self::getQualifiedVipMemberField(),
                 
-                DatePicker::make('qualified_date')
-                    ->label('Qualified Date')
-                    ->helperText('Date when VIP met all requirements for Life Class'),
+                DatePicker::make('life_class_party_date')
+                    ->label('Life Class Party Date')
+                    ->helperText('Party date before Lesson 1 starts'),
                 
                 // Life Class Lesson Completion Tracking
                 DatePicker::make('lesson_1_completion_date')
@@ -42,6 +42,10 @@ class LifeclassCandidateForm
                     ->label('Lesson 8'),
                 DatePicker::make('lesson_9_completion_date')
                     ->label('Lesson 9'),
+                
+                DatePicker::make('graduation_date')
+                    ->label('Life Class Graduation')
+                    ->helperText('Graduation ceremony date after completing all lessons'),
                 
                 Textarea::make('notes')
                     ->label('Notes')

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SundayServices\Tables;
 
+use App\Filament\Traits\HasLessonTableColumns;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DeleteAction;
@@ -11,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 
 class SundayServicesTable
 {
+    use HasLessonTableColumns;
     public static function configure(Table $table): Table
     {
         return $table
@@ -38,31 +40,8 @@ class SundayServicesTable
                     ->searchable(false)
                     ->sortable(false),
                 
-                // Individual Sunday Service Session Columns (S1-S4)
-                TextColumn::make('sunday_service_1_date')
-                    ->label('S1')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('sunday_service_2_date')
-                    ->label('S2')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('sunday_service_3_date')
-                    ->label('S3')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
-                TextColumn::make('sunday_service_4_date')
-                    ->label('S4')
-                    ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->sortable()
-                    ->alignCenter(),
+                // Individual Sunday Service Session Columns (S1-S4) - Generated dynamically via trait
+                ...self::generateLessonColumns(4, 'sunday_service_', 'S'),
                 
                 TextColumn::make('notes')
                     ->label('Notes')

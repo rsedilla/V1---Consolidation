@@ -9,7 +9,7 @@ class Sol1Candidate extends Model
     protected $table = 'sol_1_candidates';
     
     protected $fillable = [
-        'sol_1_id',
+        'sol_profile_id',
         'enrollment_date',
         'graduation_date',
         'lesson_1_completion_date',
@@ -43,9 +43,15 @@ class Sol1Candidate extends Model
     /**
      * Relationships
      */
+    public function solProfile()
+    {
+        return $this->belongsTo(SolProfile::class, 'sol_profile_id');
+    }
+    
+    // Alias for backward compatibility
     public function sol1()
     {
-        return $this->belongsTo(Sol1::class);
+        return $this->solProfile();
     }
 
     /**
@@ -53,21 +59,21 @@ class Sol1Candidate extends Model
      */
     
     /**
-     * Scope to filter by G12 leader (through sol1 relationship)
+     * Scope to filter by G12 leader through solProfile relationship
      */
     public function scopeForG12Leader($query, $g12LeaderId)
     {
-        return $query->whereHas('sol1', function ($q) use ($g12LeaderId) {
+        return $query->whereHas('solProfile', function ($q) use ($g12LeaderId) {
             $q->where('g12_leader_id', $g12LeaderId);
         });
     }
 
     /**
-     * Scope to get candidates under specific leaders (hierarchy)
+     * Scope to get records under specific leaders (hierarchy)
      */
     public function scopeUnderLeaders($query, array $leaderIds)
     {
-        return $query->whereHas('sol1', function ($q) use ($leaderIds) {
+        return $query->whereHas('solProfile', function ($q) use ($leaderIds) {
             $q->whereIn('g12_leader_id', $leaderIds);
         });
     }
@@ -106,11 +112,11 @@ class Sol1Candidate extends Model
     }
 
     /**
-     * Scope to get cell leaders only
+     * Scope to get cell leaders through solProfile relationship
      */
     public function scopeCellLeaders($query)
     {
-        return $query->whereHas('sol1', function ($q) {
+        return $query->whereHas('solProfile', function ($q) {
             $q->where('is_cell_leader', true);
         });
     }

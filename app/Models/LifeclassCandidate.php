@@ -8,7 +8,7 @@ class LifeclassCandidate extends Model
 {
     protected $fillable = [
         'member_id',
-        'qualified_date',
+        'life_class_party_date',
         'lesson_1_completion_date',
         'lesson_2_completion_date',
         'lesson_3_completion_date',
@@ -18,11 +18,12 @@ class LifeclassCandidate extends Model
         'lesson_7_completion_date',
         'lesson_8_completion_date',
         'lesson_9_completion_date',
+        'graduation_date',
         'notes'
     ];
 
     protected $casts = [
-        'qualified_date' => 'date',
+        'life_class_party_date' => 'date',
         'lesson_1_completion_date' => 'date',
         'lesson_2_completion_date' => 'date',
         'lesson_3_completion_date' => 'date',
@@ -32,6 +33,7 @@ class LifeclassCandidate extends Model
         'lesson_7_completion_date' => 'date',
         'lesson_8_completion_date' => 'date',
         'lesson_9_completion_date' => 'date',
+        'graduation_date' => 'date',
     ];
 
     /**
@@ -128,5 +130,15 @@ class LifeclassCandidate extends Model
     public function getCompletionPercentage(): float
     {
         return ($this->getCompletionCount() / 9) * 100;
+    }
+
+    /**
+     * Check if this candidate has been promoted to SOL 1
+     */
+    public function isPromotedToSol1(): bool
+    {
+        return \App\Models\SolProfile::where('member_id', $this->member_id)
+            ->where('current_sol_level_id', 1)
+            ->exists();
     }
 }

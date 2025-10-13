@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Sol1\Schemas;
 
-use App\Models\Sol1;
+use App\Models\SolProfile;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -13,12 +13,13 @@ class Sol1CandidateForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->schema([
-            Select::make('sol_1_id')
-                ->label('SOL 1 Student')
-                ->relationship('sol1', 'full_name')
+            Select::make('sol_profile_id')
+                ->label('SOL Profile')
+                ->relationship('solProfile', 'full_name')
                 ->options(function () {
-                    // Get SOL 1 students who don't have a candidate record yet
-                    return Sol1::whereDoesntHave('sol1Candidate')
+                    // Get SOL profiles at level 1 who don't have a candidate record yet
+                    return SolProfile::whereDoesntHave('sol1Candidate')
+                        ->where('current_sol_level_id', 1)
                         ->orderBy('first_name')
                         ->orderBy('last_name')
                         ->get()
@@ -26,7 +27,7 @@ class Sol1CandidateForm
                 })
                 ->searchable()
                 ->required()
-                ->helperText('Select a SOL 1 student to track lesson progress'),
+                ->helperText('Select a SOL profile (Level 1) to track lesson progress'),
             
             DatePicker::make('enrollment_date')
                 ->label('Enrollment Date')

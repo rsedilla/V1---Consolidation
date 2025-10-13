@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\Sol1\Schemas;
+namespace App\Filament\Resources\SolProfiles\Schemas;
 
 use App\Models\G12Leader;
+use App\Models\SolLevel;
 use App\Models\Status;
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
@@ -13,7 +14,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
-class Sol1Form
+class SolProfileForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -88,6 +89,19 @@ class Sol1Form
                 })
                 ->searchable()
                 ->required(),
+            
+            Select::make('current_sol_level_id')
+                ->label('Current SOL Level')
+                ->relationship('currentSolLevel', 'level_name')
+                ->options(SolLevel::orderBy('level_number')->pluck('level_name', 'id'))
+                ->searchable()
+                ->required()
+                ->default(function () {
+                    // Default to SOL 1
+                    $sol1 = SolLevel::where('level_number', 1)->first();
+                    return $sol1?->id;
+                })
+                ->helperText('Which SOL level is this student currently in?'),
             
             Toggle::make('is_cell_leader')
                 ->label('Is Cell Leader')

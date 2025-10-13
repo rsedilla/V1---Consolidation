@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\LifeclassCandidates\Tables;
 
+use App\Filament\Traits\HasSol1Promotion;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 
 class LifeclassCandidatesTable
 {
+    use HasSol1Promotion;
     public static function configure(Table $table): Table
     {
         return $table
@@ -59,7 +60,7 @@ class LifeclassCandidatesTable
                     ->sortable()
                     ->alignCenter(),
                 TextColumn::make('encounter_completion_date')
-                    ->label('Encounter')
+                    ->label('ENC')
                     ->formatStateUsing(fn ($state) => $state ? '✓' : '-')
                     ->color(fn ($state) => $state ? 'success' : 'gray')
                     ->sortable()
@@ -93,13 +94,9 @@ class LifeclassCandidatesTable
                 //
             ])
             ->recordActions([
+                // Promote to SOL 1 Action (using HasSol1Promotion trait)
+                self::makeSol1PromotionAction(),
                 EditAction::make(),
-                DeleteAction::make()
-                    ->requiresConfirmation()
-                    ->modalHeading('Delete Lifeclass Candidate')
-                    ->modalDescription('Are you sure you want to permanently delete this lifeclass candidate? This action cannot be undone and will remove all associated data.')
-                    ->modalSubmitActionLabel('Yes, Delete Permanently')
-                    ->color('danger'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
