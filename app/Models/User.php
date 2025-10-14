@@ -146,6 +146,74 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the assigned G12 Leader record for Equipping users
+     * Equipping users are assigned to a specific G12 Leader via g12_leader_id
+     */
+    public function assignedLeader()
+    {
+        return $this->belongsTo(G12Leader::class, 'g12_leader_id');
+    }
+
+    /**
+     * Get visible leader IDs for data filtering based on user role
+     * - Admin: See all leaders (returns empty array, no filtering)
+     * - Equipping: See only assigned leader's hierarchy (including descendants)
+     * - Leader: See their own hierarchy (including descendants)
+     * - User: No access (returns empty array)
+     * 
+     * @return array Array of G12Leader IDs that the user can access
+     */
+    public function getVisibleLeaderIdsForFiltering(): array
+    {
+        // Admin sees everything - no filtering needed
+        if ($this->isAdmin()) {
+            return [];
+        }
+
+        // Equipping users see only their assigned leader's hierarchy
+        if ($this->isEquipping() && $this->assignedLeader) {
+            return Cache::remember(
+                "equipping_user_{$this->id}_visible_leaders",
+                1800, // 30 minutes
+                fn() => $this->assignedLeader->getAllDescendantIds()
+            );
+        }
+
+        // Leaders see their own hierarchy
+        if ($this->isLeader() && $this->leaderRecord) {
+            return $this->getVisibleLeaderIds();
+        }
+
+        // Regular users have no access
+        return [];
+    }
+
+    /**
+     * Check if equipping user can access data for a specific member
+     * 
+     * @param Member $member The member to check access for
+     * @return bool True if user can access the member's data
+     */
+    public function canAccessMemberData(Member $member): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        if ($this->isEquipping() && $this->assignedLeader) {
+            $visibleLeaderIds = $this->getVisibleLeaderIdsForFiltering();
+            return in_array($member->g12_leader_id, $visibleLeaderIds);
+        }
+
+        if ($this->isLeader() && $this->leaderRecord) {
+            $visibleLeaderIds = $this->getVisibleLeaderIds();
+            return in_array($member->g12_leader_id, $visibleLeaderIds);
+        }
+
+        return false;
+    }
+
+    /**
      * Get cached visible leader IDs to prevent duplicate hierarchy traversal in same request
      */
     private function getVisibleLeaderIds(): array

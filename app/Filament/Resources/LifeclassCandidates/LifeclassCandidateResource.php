@@ -35,6 +35,10 @@ class LifeclassCandidateResource extends Resource
 
     /**
      * Filter records based on user role and G12 leader assignment
+     * - Admin: See all records
+     * - Equipping: See only records for assigned leader's hierarchy
+     * - Leader: See records for their own hierarchy (including descendants)
+     * - User: See nothing
      */
     public static function getEloquentQuery(): Builder
     {
@@ -47,10 +51,14 @@ class LifeclassCandidateResource extends Resource
         // (Database records preserved, they just appear in SOL 1 Progress instead)
         $query->notPromotedToSol1();
         
-        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
-            // Leaders see records for their hierarchy (including descendants)
-            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
-            return $query->underLeaders($visibleLeaderIds);
+        if ($user instanceof User && ($user->hasLeadershipRole())) {
+            // Get visible leader IDs based on role (Equipping or Leader)
+            $visibleLeaderIds = $user->getVisibleLeaderIdsForFiltering();
+            
+            // Empty array means admin - see everything
+            if (!empty($visibleLeaderIds)) {
+                return $query->underLeaders($visibleLeaderIds);
+            }
         }
         
         // Admins see everything, other users see nothing
