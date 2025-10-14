@@ -58,21 +58,33 @@ class LifeclassCandidate extends Model
     /**
      * Scope to filter candidates by G12 leader
      * Used for leader-specific data filtering
+     * Checks both member.g12_leader_id and solProfile.g12_leader_id
      */
     public function scopeForG12Leader($query, $g12LeaderId)
     {
-        return $query->whereHas('member', function($q) use ($g12LeaderId) {
-            $q->where('g12_leader_id', $g12LeaderId);
+        return $query->where(function($q) use ($g12LeaderId) {
+            $q->whereHas('member', function($subQ) use ($g12LeaderId) {
+                $subQ->where('g12_leader_id', $g12LeaderId);
+            })
+            ->orWhereHas('solProfile', function($subQ) use ($g12LeaderId) {
+                $subQ->where('g12_leader_id', $g12LeaderId);
+            });
         });
     }
 
     /**
      * Scope to get candidates for members under specific leaders
+     * Checks both member.g12_leader_id and solProfile.g12_leader_id
      */
     public function scopeUnderLeaders($query, array $leaderIds)
     {
-        return $query->whereHas('member', function ($q) use ($leaderIds) {
-            $q->underLeaders($leaderIds);
+        return $query->where(function($q) use ($leaderIds) {
+            $q->whereHas('member', function ($subQ) use ($leaderIds) {
+                $subQ->underLeaders($leaderIds);
+            })
+            ->orWhereHas('solProfile', function($subQ) use ($leaderIds) {
+                $subQ->whereIn('g12_leader_id', $leaderIds);
+            });
         });
     }
 
@@ -80,10 +92,26 @@ class LifeclassCandidate extends Model
      * Scope to get only candidates who have NOT been promoted to SOL
      * Filters out students who are already in any SOL level (1, 2, 3, etc.)
      * They should only appear in their respective SOL level tables
+     * 
+     * For candidates with solProfile: checks if current_sol_level_id is still 0 (Life Class)
+     * For candidates with member only: checks if they don't have any SOL profiles
      */
     public function scopeNotPromotedToSol1($query)
     {
-        return $query->whereDoesntHave('member.solProfiles');
+        return $query->where(function($q) {
+            // Case 1: Has solProfile - check if still at Life Class level (level_number = 0)
+            $q->whereHas('solProfile', function($subQ) {
+                $lifeClassLevel = \App\Models\SolLevel::where('level_number', 0)->first();
+                if ($lifeClassLevel) {
+                    $subQ->where('current_sol_level_id', $lifeClassLevel->id);
+                }
+            })
+            // Case 2: Has member but no SOL profile - not promoted yet
+            ->orWhere(function($subQ) {
+                $subQ->whereNotNull('member_id')
+                     ->whereDoesntHave('member.solProfiles');
+            });
+        });
     }
 
     /**
