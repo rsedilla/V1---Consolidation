@@ -48,7 +48,8 @@ class SolProfileResource extends Resource
             'g12Leader', 
             'currentSolLevel', 
             'sol1Candidate', 
-            'sol2Candidate'
+            'sol2Candidate',
+            'sol3Candidate'
         ]);
         
         if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
