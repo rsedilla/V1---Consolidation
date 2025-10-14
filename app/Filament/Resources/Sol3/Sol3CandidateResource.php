@@ -95,6 +95,6 @@ class Sol3CandidateResource extends Resource
 
     protected static function getNavigationBadgeCacheKey(): string
     {
-        return 'nav_badge_sol3_candidates';
+        return 'nav_badge_sol_3_candidates';
     }
 }

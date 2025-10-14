@@ -13,7 +13,7 @@ class Sol3Candidate extends Model
         HasSolScopes,
         HasSolLessonConfiguration;
     
-    protected $table = 'sol3_candidates';
+    protected $table = 'sol_3_candidates';
     
     protected $fillable = [
         'sol_profile_id',
