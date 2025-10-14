@@ -17,7 +17,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use UnitEnum;
 
 class LifeclassCandidateResource extends Resource
 {
@@ -31,10 +30,8 @@ class LifeclassCandidateResource extends Resource
     protected static ?string $modelLabel = 'Life Class';
     
     protected static ?string $pluralModelLabel = 'Life Class';
-    
-    protected static string|UnitEnum|null $navigationGroup = 'Training';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 8;
 
     /**
      * Filter records based on user role and G12 leader assignment
