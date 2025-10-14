@@ -3,11 +3,16 @@
 namespace App\Models;
 
 use App\Models\Traits\HasLessonCompletion;
+use App\Traits\HasSolScopes;
+use App\Traits\HasSolLessonConfiguration;
 use Illuminate\Database\Eloquent\Model;
 
 class Sol1Candidate extends Model
 {
-    use HasLessonCompletion;
+    use HasLessonCompletion,
+        HasSolScopes,
+        HasSolLessonConfiguration;
+    
     protected $table = 'sol_1_candidates';
     
     protected $fillable = [
@@ -56,65 +61,8 @@ class Sol1Candidate extends Model
         return $this->solProfile();
     }
 
-    /**
-     * Scopes
-     */
-    
-    /**
-     * Scope to filter by G12 leader through solProfile relationship
-     */
-    public function scopeForG12Leader($query, $g12LeaderId)
-    {
-        return $query->whereHas('solProfile', function ($q) use ($g12LeaderId) {
-            $q->where('g12_leader_id', $g12LeaderId);
-        });
-    }
-
-    /**
-     * Scope to get records under specific leaders (hierarchy)
-     */
-    public function scopeUnderLeaders($query, array $leaderIds)
-    {
-        return $query->whereHas('solProfile', function ($q) use ($leaderIds) {
-            $q->whereIn('g12_leader_id', $leaderIds);
-        });
-    }
-
-    /**
-     * Define lesson fields for HasLessonCompletion trait
-     * SOL 1 has 10 lessons: L1-L10
-     */
-    protected function getLessonFields(): array
-    {
-        return [
-            'lesson_1_completion_date',
-            'lesson_2_completion_date',
-            'lesson_3_completion_date',
-            'lesson_4_completion_date',
-            'lesson_5_completion_date',
-            'lesson_6_completion_date',
-            'lesson_7_completion_date',
-            'lesson_8_completion_date',
-            'lesson_9_completion_date',
-            'lesson_10_completion_date',
-        ];
-    }
-
-    /**
-     * Define total lesson count for HasLessonCompletion trait
-     */
-    protected function getLessonCount(): int
-    {
-        return 10;
-    }
-
-    /**
-     * Scope to get active (not graduated) records
-     */
-    public function scopeActive($query)
-    {
-        return $query->whereNull('graduation_date');
-    }
+    // SOL scopes (ForG12Leader, UnderLeaders, Active, CellLeaders) are in HasSolScopes trait
+    // Lesson configuration (getLessonFields, getLessonCount) is in HasSolLessonConfiguration trait
 
     /**
      * Scope to get records that are qualified for SOL 2 (completed all 10 lessons but not graduated)
@@ -122,16 +70,6 @@ class Sol1Candidate extends Model
     public function scopeQualifiedForSol2($query)
     {
         return $query->completed()->whereNull('graduation_date');
-    }
-
-    /**
-     * Scope to get cell leaders through solProfile relationship
-     */
-    public function scopeCellLeaders($query)
-    {
-        return $query->whereHas('solProfile', function ($q) {
-            $q->where('is_cell_leader', true);
-        });
     }
 
     /**
