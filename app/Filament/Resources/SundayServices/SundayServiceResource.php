@@ -25,7 +25,7 @@ class SundayServiceResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'Sunday Services';
+    protected static ?string $navigationLabel = 'Member - Sunday Services';
 
     protected static ?int $navigationSort = 6;
 

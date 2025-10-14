@@ -25,7 +25,7 @@ class StartUpYourNewLifeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'New Life Training';
+    protected static ?string $navigationLabel = 'Member - SUYNL';
 
     protected static ?int $navigationSort = 5;
 
