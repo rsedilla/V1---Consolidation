@@ -59,6 +59,11 @@ class SolProfile extends Model
         return $this->hasOne(Sol1Candidate::class, 'sol_profile_id');
     }
 
+    public function sol2Candidate()
+    {
+        return $this->hasOne(Sol2Candidate::class, 'sol_profile_id');
+    }
+
     /**
      * Scopes
      */
