@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Sol1\Tables;
 
 use App\Filament\Traits\HasLessonTableColumns;
+use App\Filament\Traits\HasSol2Promotion;
 use App\Models\Sol1Candidate;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Sol1CandidatesTable
 {
     use HasLessonTableColumns;
+    use HasSol2Promotion;
     public static function configure(Table $table): Table
     {
         return $table
@@ -37,6 +39,13 @@ class Sol1CandidatesTable
                     ->searchable()
                     ->sortable(),
                 
+                // SOL 2 Promotion Status
+                BadgeColumn::make('sol2_status')
+                    ->label('SOL 2 Status')
+                    ->getStateUsing(fn($record) => self::getSol2Status($record)['label'])
+                    ->color(fn($record) => self::getSol2Status($record)['color'])
+                    ->sortable(false),
+                
                 // SOL 1 Lesson Status Columns (L1-L10)
                 ...self::generateLessonColumns(10, 'lesson_', 'L'),
             ])
@@ -44,6 +53,9 @@ class Sol1CandidatesTable
                 //
             ])
             ->recordActions([
+                // Promote to SOL 2 Action (using HasSol2Promotion trait)
+                self::makeSol2PromotionAction(),
+                
                 EditAction::make(),
                 DeleteAction::make()
                     ->requiresConfirmation()

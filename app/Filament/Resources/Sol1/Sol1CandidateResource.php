@@ -43,7 +43,11 @@ class Sol1CandidateResource extends Resource
         $user = Auth::user();
         
         // Eager load relationships
-        $query = parent::getEloquentQuery()->with(['sol1.status', 'sol1.g12Leader']);
+        $query = parent::getEloquentQuery()->with(['solProfile.status', 'solProfile.g12Leader']);
+        
+        // Hide candidates who have been promoted to SOL 2
+        // (Database records preserved, they just appear in SOL 2 Progress instead)
+        $query->notPromotedToSol2();
         
         if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
             // Leaders see records for their hierarchy (including descendants)

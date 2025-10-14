@@ -50,6 +50,12 @@ class Sol2Candidate extends Model
     {
         return $this->belongsTo(SolProfile::class, 'sol_profile_id');
     }
+    
+    // Alias for backward compatibility
+    public function sol2()
+    {
+        return $this->solProfile();
+    }
 
     /**
      * Scopes
@@ -117,6 +123,16 @@ class Sol2Candidate extends Model
     public function scopeQualifiedForSol3($query)
     {
         return $query->completed()->whereNull('graduation_date');
+    }
+
+    /**
+     * Scope to get cell leaders through solProfile relationship
+     */
+    public function scopeCellLeaders($query)
+    {
+        return $query->whereHas('solProfile', function ($q) {
+            $q->where('is_cell_leader', true);
+        });
     }
 
     /**
