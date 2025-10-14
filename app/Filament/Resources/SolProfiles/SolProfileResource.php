@@ -42,8 +42,14 @@ class SolProfileResource extends Resource
     {
         $user = Auth::user();
         
-        // Eager load relationships
-        $query = parent::getEloquentQuery()->with(['status', 'g12Leader', 'currentSolLevel', 'sol1Candidate']);
+        // Eager load relationships to prevent lazy loading errors
+        $query = parent::getEloquentQuery()->with([
+            'status', 
+            'g12Leader', 
+            'currentSolLevel', 
+            'sol1Candidate', 
+            'sol2Candidate'
+        ]);
         
         if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
             // Leaders see records for their hierarchy (including descendants)
