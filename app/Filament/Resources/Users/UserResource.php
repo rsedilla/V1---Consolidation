@@ -24,6 +24,10 @@ class UserResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $navigationLabel = 'Users';
+    
+    protected static ?string $modelLabel = 'User';
+    
+    protected static ?string $pluralModelLabel = 'Users';
 
     protected static ?int $navigationSort = 2;
 
@@ -40,6 +44,33 @@ class UserResource extends Resource
      * Only allow admins to access user management
      */
     public static function canViewAny(): bool
+    {
+        $user = Auth::user();
+        return $user instanceof User && $user->isAdmin();
+    }
+
+    /**
+     * Only allow admins to create users
+     */
+    public static function canCreate(): bool
+    {
+        $user = Auth::user();
+        return $user instanceof User && $user->isAdmin();
+    }
+
+    /**
+     * Only allow admins to edit users
+     */
+    public static function canEdit($record): bool
+    {
+        $user = Auth::user();
+        return $user instanceof User && $user->isAdmin();
+    }
+
+    /**
+     * Only allow admins to delete users
+     */
+    public static function canDelete($record): bool
     {
         $user = Auth::user();
         return $user instanceof User && $user->isAdmin();
@@ -122,6 +153,7 @@ class UserResource extends Resource
         $roleLabel = match ($record->role) {
             'admin' => 'Administrator',
             'leader' => 'Leader',
+            'equipping' => 'Equipping',
             'user' => 'User',
             default => 'User',
         };

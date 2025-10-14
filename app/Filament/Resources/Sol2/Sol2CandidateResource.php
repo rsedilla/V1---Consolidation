@@ -28,6 +28,10 @@ class Sol2CandidateResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
     protected static ?string $navigationLabel = 'SOL 2 Progress';
+
+    protected static ?string $modelLabel = 'School of Leaders 2';
+    
+    protected static ?string $pluralModelLabel = 'School of Leaders 2';
     
     protected static string|UnitEnum|null $navigationGroup = 'Training';
 

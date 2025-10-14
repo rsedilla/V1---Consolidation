@@ -27,6 +27,10 @@ class LifeclassCandidateResource extends Resource
 
     protected static ?string $navigationLabel = 'Life Class';
 
+    protected static ?string $modelLabel = 'Life Class';
+    
+    protected static ?string $pluralModelLabel = 'Life Class';
+
     protected static ?int $navigationSort = 8;
 
     /**

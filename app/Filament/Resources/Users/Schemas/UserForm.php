@@ -25,11 +25,12 @@ class UserForm
                     ->options([
                         'user' => 'User',
                         'leader' => 'Leader',
+                        'equipping' => 'Equipping',
                         'admin' => 'Administrator',
                     ])
                     ->default('user')
                     ->required()
-                    ->helperText('Admin: Full access, Leader: Leadership privileges, User: Basic access'),
+                    ->helperText('Admin: Full access, Equipping: Same as Leader, Leader: Leadership privileges, User: Basic access'),
                 Select::make('g12_leader_id')
                     ->label('Belongs to G12 Leader')
                     ->options(G12Leader::orderBy('name')->pluck('name', 'id'))

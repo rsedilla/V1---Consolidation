@@ -39,13 +39,6 @@ class Sol1CandidatesTable
                     ->searchable()
                     ->sortable(),
                 
-                // SOL 2 Promotion Status
-                BadgeColumn::make('sol2_status')
-                    ->label('SOL 2 Status')
-                    ->getStateUsing(fn($record) => self::getSol2Status($record)['label'])
-                    ->color(fn($record) => self::getSol2Status($record)['color'])
-                    ->sortable(false),
-                
                 // SOL 1 Lesson Status Columns (L1-L10)
                 ...self::generateLessonColumns(10, 'lesson_', 'L'),
             ])

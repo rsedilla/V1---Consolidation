@@ -29,6 +29,10 @@ class Sol1CandidateResource extends Resource
 
     protected static ?string $navigationLabel = 'SOL 1 Progress';
     
+    protected static ?string $modelLabel = 'School of Leaders 1';
+    
+    protected static ?string $pluralModelLabel = 'School of Leaders 1';
+    
     protected static string|UnitEnum|null $navigationGroup = 'Training';
 
     protected static ?int $navigationSort = 10;

@@ -71,11 +71,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user has admin or leader privileges
+     * Check if user is an equipping staff
+     */
+    public function isEquipping(): bool
+    {
+        return $this->role === 'equipping';
+    }
+
+    /**
+     * Check if user has admin, leader, or equipping privileges
      */
     public function hasLeadershipRole(): bool
     {
-        return in_array($this->role, ['admin', 'leader']);
+        return in_array($this->role, ['admin', 'leader', 'equipping']);
     }
 
     /**
@@ -86,6 +94,7 @@ class User extends Authenticatable
         return match($this->role) {
             'admin' => 'Administrator',
             'leader' => 'Leader',
+            'equipping' => 'Equipping',
             'user' => 'User',
             default => 'User',
         };

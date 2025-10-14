@@ -27,13 +27,15 @@ class UsersTable
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'admin' => 'Administrator',
                         'leader' => 'Leader',
+                        'equipping' => 'Equipping',
                         'user' => 'User',
                         default => 'User',
                     })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'danger',
-                        'leader' => 'warning', 
+                        'leader' => 'warning',
+                        'equipping' => 'success',
                         'user' => 'secondary',
                         default => 'secondary',
                     })
@@ -63,6 +65,7 @@ class UsersTable
                     ->options([
                         'user' => 'User',
                         'leader' => 'Leader',
+                        'equipping' => 'Equipping',
                         'admin' => 'Administrator',
                     ])
                     ->placeholder('All Roles'),
