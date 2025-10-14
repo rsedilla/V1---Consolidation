@@ -47,8 +47,8 @@ class LifeclassCandidateResource extends Resource
     {
         $user = Auth::user();
         
-        // Eager load the member and solProfile relationships to optimize database queries
-        $query = parent::getEloquentQuery()->with(['member', 'solProfile.g12Leader', 'solProfile.status']);
+        // Eager load the member relationship to optimize database queries
+        $query = parent::getEloquentQuery()->with(['member']);
         
         // Hide candidates who have been promoted to SOL 1
         // (Database records preserved, they just appear in SOL 1 Progress instead)

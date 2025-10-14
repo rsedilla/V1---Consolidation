@@ -47,7 +47,6 @@ class SolProfileResource extends Resource
             'status', 
             'g12Leader', 
             'currentSolLevel', 
-            'lifeclassCandidate',
             'sol1Candidate', 
             'sol2Candidate',
             'sol3Candidate'

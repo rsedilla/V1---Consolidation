@@ -18,35 +18,22 @@ class LifeclassCandidatesTable
     {
         return $table
             ->columns([
-                TextColumn::make('first_name')
+                TextColumn::make('member.first_name')
                     ->label('First Name')
-                    ->formatStateUsing(fn ($record) => 
-                        $record->solProfile 
-                            ? $record->solProfile->first_name 
-                            : $record->member?->first_name ?? 'N/A'
-                    )
                     ->sortable()
-                    ->searchable(['solProfile.first_name', 'member.first_name']),
-                TextColumn::make('last_name')
+                    ->searchable(),
+                TextColumn::make('member.last_name')
                     ->label('Last Name')
-                    ->formatStateUsing(fn ($record) => 
-                        $record->solProfile 
-                            ? $record->solProfile->last_name 
-                            : $record->member?->last_name ?? 'N/A'
-                    )
                     ->sortable()
-                    ->searchable(['solProfile.last_name', 'member.last_name']),
-                TextColumn::make('g12_leader')
-                    ->label('G12 Leader')
-                    ->formatStateUsing(function ($record) {
-                        if ($record->solProfile && $record->solProfile->g12Leader) {
-                            return $record->solProfile->g12Leader->first_name . ' ' . $record->solProfile->g12Leader->last_name;
-                        }
-                        if ($record->member && $record->member->consolidator) {
-                            return $record->member->consolidator->first_name . ' ' . $record->member->consolidator->last_name;
-                        }
-                        return 'N/A';
-                    })
+                    ->searchable(),
+                TextColumn::make('member.consolidator.first_name')
+                    ->label('Consolidator')
+                    ->formatStateUsing(fn ($record) => 
+                        $record->member?->consolidator 
+                            ? $record->member->consolidator->first_name . ' ' . $record->member->consolidator->last_name 
+                            : 'N/A'
+                    )
+                    ->searchable(['consolidator.first_name', 'consolidator.last_name'])
                     ->sortable(),
                 
                 // Individual Life Class Lesson Status Columns (L1-L4, Encounter, L6-L9) - Generated dynamically via trait
