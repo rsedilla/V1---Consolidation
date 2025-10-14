@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Sol2\Tables;
 
 use App\Filament\Traits\HasLessonTableColumns;
+use App\Filament\Traits\HasSol3Promotion;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -13,6 +14,7 @@ use Filament\Tables\Table;
 class Sol2CandidatesTable
 {
     use HasLessonTableColumns;
+    use HasSol3Promotion;
     
     public static function configure(Table $table): Table
     {
@@ -40,6 +42,9 @@ class Sol2CandidatesTable
                 //
             ])
             ->recordActions([
+                // Promote to SOL 3 Action (using HasSol3Promotion trait)
+                self::makeSol3PromotionAction(),
+                
                 EditAction::make(),
                 DeleteAction::make()
                     ->requiresConfirmation()

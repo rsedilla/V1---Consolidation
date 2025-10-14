@@ -73,10 +73,31 @@ class Sol2Candidate extends Model
     }
 
     /**
+     * Scope to filter out candidates who have been promoted to SOL 3
+     * Hides them from SOL 2 Progress (they appear in SOL 3 Progress instead)
+     * Database records are preserved for history
+     */
+    public function scopeNotPromotedToSol3($query)
+    {
+        return $query->whereDoesntHave('solProfile', function ($q) {
+            $q->where('current_sol_level_id', '>=', 3);
+        });
+    }
+
+    /**
      * Check if qualified for SOL 3 promotion
      */
     public function isQualifiedForSol3(): bool
     {
         return $this->isCompleted() && is_null($this->graduation_date);
+    }
+
+    /**
+     * Check if already promoted to SOL 3
+     */
+    public function isPromotedToSol3(): bool
+    {
+        return !is_null($this->graduation_date) && 
+               Sol3Candidate::where('sol_profile_id', $this->sol_profile_id)->exists();
     }
 }
