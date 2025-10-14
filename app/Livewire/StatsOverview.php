@@ -22,7 +22,7 @@ class StatsOverview extends StatsOverviewWidget
     protected function getStats(): array
     {
         $user = Auth::user();
-        return $this->getCachedStats($user, 300); // 5 minutes cache
+        return $this->getCachedDashboardStats($user, 300); // 5 minutes cache
     }
     
     protected function generateStats($user): array

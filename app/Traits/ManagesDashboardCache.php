@@ -22,7 +22,7 @@ trait ManagesDashboardCache
     /**
      * Get cached dashboard stats with a TTL
      */
-    protected function getCachedStats($user, int $ttl = 300): array
+    protected function getCachedDashboardStats($user, int $ttl = 300): array
     {
         $cacheKey = $this->getDashboardCacheKey($user);
         
