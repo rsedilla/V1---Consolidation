@@ -68,6 +68,11 @@ class SolProfile extends Model
         return $this->hasOne(Sol2Candidate::class, 'sol_profile_id');
     }
 
+    public function sol3Candidate()
+    {
+        return $this->hasOne(Sol3Candidate::class, 'sol_profile_id');
+    }
+
     // SOL profile scopes (ForG12Leader, UnderLeaders, Active, CellLeaders, AtLevel) are in HasSolProfileScopes trait
     // Helper methods (getFullNameAttribute, isQualifiedForSol2, getCompletionProgress, promoteToNextLevel) are in HasSolProfileHelpers trait
 }

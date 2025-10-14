@@ -29,6 +29,16 @@ trait HasSolProfileHelpers
     }
 
     /**
+     * Check if this student is qualified for SOL 3
+     */
+    public function isQualifiedForSol3(): bool
+    {
+        return $this->current_sol_level_id == 2 && 
+               $this->sol2Candidate && 
+               $this->sol2Candidate->isCompleted();
+    }
+
+    /**
      * Get completion progress for current level
      */
     public function getCompletionProgress(): array
@@ -67,7 +77,24 @@ trait HasSolProfileHelpers
             ];
         }
 
-        // Future: SOL 3 and beyond
+        // For SOL 3
+        if ($this->current_sol_level_id == 3) {
+            if (!$this->sol3Candidate) {
+                return [
+                    'completed' => 0,
+                    'total' => 10,
+                    'percentage' => 0,
+                ];
+            }
+
+            return [
+                'completed' => $this->sol3Candidate->getCompletionCount(),
+                'total' => 10,
+                'percentage' => $this->sol3Candidate->getCompletionPercentage(),
+            ];
+        }
+
+        // Future: SOL 4 and beyond
         return [
             'completed' => 0,
             'total' => 10,
