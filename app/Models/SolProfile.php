@@ -75,7 +75,7 @@ class SolProfile extends Model
 
     public function lifeclassCandidate()
     {
-        return $this->hasOne(LifeclassCandidate::class, 'member_id', 'member_id');
+        return $this->hasOne(LifeclassCandidate::class, 'sol_profile_id');
     }
 
     // SOL profile scopes (ForG12Leader, UnderLeaders, Active, CellLeaders, AtLevel) are in HasSolProfileScopes trait

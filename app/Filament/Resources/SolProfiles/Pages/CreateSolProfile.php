@@ -15,7 +15,7 @@ class CreateSolProfile extends CreateRecord
     
     /**
      * After creating a SOL Profile, automatically create a Life Class candidate
-     * if the current_sol_level_id is 4 (Life Class, level_number = 0) and a member is linked
+     * if the current_sol_level_id is 4 (Life Class, level_number = 0)
      */
     protected function afterCreate(): void
     {
@@ -24,15 +24,16 @@ class CreateSolProfile extends CreateRecord
         // Get the Life Class level (level_number = 0)
         $lifeClassLevel = \App\Models\SolLevel::where('level_number', 0)->first();
         
-        // Check if this SOL Profile is at Life Class level and has a linked member
-        if ($lifeClassLevel && $solProfile->current_sol_level_id == $lifeClassLevel->id && $solProfile->member_id) {
-            // Check if a Life Class candidate doesn't already exist for this member
-            $existingCandidate = LifeclassCandidate::where('member_id', $solProfile->member_id)->first();
+        // Check if this SOL Profile is at Life Class level
+        if ($lifeClassLevel && $solProfile->current_sol_level_id == $lifeClassLevel->id) {
+            // Check if a Life Class candidate doesn't already exist for this SOL Profile
+            $existingCandidate = LifeclassCandidate::where('sol_profile_id', $solProfile->id)->first();
             
             if (!$existingCandidate) {
                 // Create a new Life Class candidate
                 LifeclassCandidate::create([
-                    'member_id' => $solProfile->member_id,
+                    'sol_profile_id' => $solProfile->id,
+                    'member_id' => $solProfile->member_id, // Can be null
                     'notes' => 'Automatically created from SOL Profile',
                 ]);
                 

@@ -9,6 +9,7 @@ class LifeclassCandidate extends Model
 {
     use HasLessonCompletion;
     protected $fillable = [
+        'sol_profile_id',
         'member_id',
         'life_class_party_date',
         'lesson_1_completion_date',
@@ -39,7 +40,15 @@ class LifeclassCandidate extends Model
     ];
 
     /**
-     * Get the member that this candidate belongs to
+     * Get the SOL profile that this candidate belongs to
+     */
+    public function solProfile()
+    {
+        return $this->belongsTo(SolProfile::class, 'sol_profile_id');
+    }
+
+    /**
+     * Get the member that this candidate belongs to (if linked)
      */
     public function member()
     {
