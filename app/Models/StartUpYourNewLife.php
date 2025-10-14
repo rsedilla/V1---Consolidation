@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Models\Traits\HasLessonCompletion;
+use App\Traits\HasFoundationalTrainingScopes;
 use Illuminate\Database\Eloquent\Model;
 
 class StartUpYourNewLife extends Model
 {
-    use HasLessonCompletion;
+    use HasLessonCompletion, HasFoundationalTrainingScopes;
 
     protected $table = 'start_up_your_new_life';
     
@@ -71,24 +72,5 @@ class StartUpYourNewLife extends Model
         return 10;
     }
 
-    /**
-     * Scope to filter by G12 leader through member relationship
-     */
-    public function scopeForG12Leader($query, $g12LeaderId)
-    {
-        return $query->whereHas('member', function ($q) use ($g12LeaderId) {
-            $q->where('g12_leader_id', $g12LeaderId);
-        });
-    }
-
-    /**
-     * Scope to get completed lessons for VIP members under specific leaders
-     */
-    public function scopeCompletedForVipsUnderLeaders($query, array $leaderIds)
-    {
-        return $query->completed()
-            ->whereHas('member', function ($q) use ($leaderIds) {
-                $q->vips()->underLeaders($leaderIds);
-            });
-    }
+    // Foundational training scopes (ForG12Leader, CompletedUnderLeaders, CompletedForVipsUnderLeaders) are in HasFoundationalTrainingScopes trait
 }

@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Models\Traits\HasLessonCompletion;
+use App\Traits\HasFoundationalTrainingScopes;
 use Illuminate\Database\Eloquent\Model;
 
 class SundayService extends Model
 {
-    use HasLessonCompletion;
+    use HasLessonCompletion, HasFoundationalTrainingScopes;
     protected $fillable = [
         'member_id',
         'service_date',
@@ -55,24 +56,5 @@ class SundayService extends Model
         return 4;
     }
 
-    /**
-     * Scope to filter by G12 leader through member relationship
-     */
-    public function scopeForG12Leader($query, $g12LeaderId)
-    {
-        return $query->whereHas('member', function ($q) use ($g12LeaderId) {
-            $q->where('g12_leader_id', $g12LeaderId);
-        });
-    }
-
-    /**
-     * Scope to get completed services for members under specific leaders
-     */
-    public function scopeCompletedUnderLeaders($query, array $leaderIds)
-    {
-        return $query->completed()
-            ->whereHas('member', function ($q) use ($leaderIds) {
-                $q->underLeaders($leaderIds);
-            });
-    }
+    // Foundational training scopes (ForG12Leader, CompletedUnderLeaders) are in HasFoundationalTrainingScopes trait
 }
