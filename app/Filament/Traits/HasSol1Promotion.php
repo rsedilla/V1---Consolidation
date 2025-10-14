@@ -66,12 +66,11 @@ trait HasSol1Promotion
     }
 
     /**
-     * Check if member already has SOL 1 profile
+     * Check if member already has a SOL profile (any level)
      */
     protected static function isAlreadyInSol1(int $memberId): bool
     {
         return SolProfile::where('member_id', $memberId)
-            ->where('current_sol_level_id', 1)
             ->exists();
     }
 

@@ -68,14 +68,13 @@ class LifeclassCandidate extends Model
     }
 
     /**
-     * Scope to get only candidates who have NOT been promoted to SOL 1
-     * Filters out students who already appear in SOL 1 Progress
+     * Scope to get only candidates who have NOT been promoted to SOL
+     * Filters out students who are already in any SOL level (1, 2, 3, etc.)
+     * They should only appear in their respective SOL level tables
      */
     public function scopeNotPromotedToSol1($query)
     {
-        return $query->whereDoesntHave('member.solProfiles', function ($q) {
-            $q->where('current_sol_level_id', 1);
-        });
+        return $query->whereDoesntHave('member.solProfiles');
     }
 
     /**
@@ -106,12 +105,11 @@ class LifeclassCandidate extends Model
     }
 
     /**
-     * Check if this candidate has been promoted to SOL 1
+     * Check if this candidate has been promoted to SOL (any level)
      */
     public function isPromotedToSol1(): bool
     {
         return \App\Models\SolProfile::where('member_id', $this->member_id)
-            ->where('current_sol_level_id', 1)
             ->exists();
     }
 }
