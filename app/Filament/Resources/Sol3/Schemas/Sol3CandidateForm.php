@@ -19,8 +19,12 @@ class Sol3CandidateForm
             Select::make('sol_profile_id')
                 ->label('SOL Profile')
                 ->relationship('solProfile', 'full_name')
-                ->options(function () {
-                    // Get SOL profiles at level 3 who don't have a candidate record yet
+                ->options(function ($record) {
+                    // When editing, just show current profile (no search needed)
+                    if ($record && $record->sol_profile_id) {
+                        return [$record->sol_profile_id => $record->solProfile->full_name];
+                    }
+                    // When creating, load available profiles with search
                     return SolProfile::whereDoesntHave('sol3Candidate')
                         ->where('current_sol_level_id', 3)
                         ->orderBy('first_name')
@@ -28,7 +32,8 @@ class Sol3CandidateForm
                         ->get()
                         ->pluck('full_name', 'id');
                 })
-                ->searchable()
+                ->searchable(fn ($record) => !$record) // Only searchable when creating
+                ->disabled(fn ($record) => (bool) $record) // Disabled when editing
                 ->required()
                 ->helperText('Select a SOL profile (Level 3) to track lesson progress'),
             
