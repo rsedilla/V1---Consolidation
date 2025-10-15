@@ -155,28 +155,42 @@ trait HasMemberFields
      * Get qualified VIP members for Life Class selection field
      * Shows only VIPs who completed all requirements (10/10 New Life + 4/4 Sunday + 4/4 Cell Group)
      * Filtered by G12 hierarchy for leaders
+     * When editing, includes the current member even if they no longer qualify
      */
     public static function getQualifiedVipMemberField(): Select
     {
-        $user = Auth::user();
-        $baseQuery = \App\Services\MemberCompletionService::getQualifiedVipMembers();
-        
-        // Apply hierarchical filtering for leaders
-        if ($user instanceof User && $user->leaderRecord && !$user->isAdmin()) {
-            $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
-            $qualifiedVips = $baseQuery->filter(function ($member) use ($visibleLeaderIds) {
-                return in_array($member->g12_leader_id, $visibleLeaderIds);
-            });
-        } else {
-            // Admins see all qualified VIPs
-            $qualifiedVips = $baseQuery;
-        }
-        
         return Select::make('member_id')
             ->label('Member (Qualified VIPs Only)')
-            ->options($qualifiedVips->mapWithKeys(function ($member) {
-                return [$member->id => $member->first_name . ' ' . $member->last_name];
-            }))
+            ->options(function ($record) {
+                $user = Auth::user();
+                $baseQuery = \App\Services\MemberCompletionService::getQualifiedVipMembers();
+                
+                // Apply hierarchical filtering for leaders
+                if ($user instanceof User && $user->leaderRecord && !$user->isAdmin()) {
+                    $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
+                    $qualifiedVips = $baseQuery->filter(function ($member) use ($visibleLeaderIds) {
+                        return in_array($member->g12_leader_id, $visibleLeaderIds);
+                    });
+                } else {
+                    // Admins see all qualified VIPs
+                    $qualifiedVips = $baseQuery;
+                }
+                
+                // Build options array
+                $options = $qualifiedVips->mapWithKeys(function ($member) {
+                    return [$member->id => $member->first_name . ' ' . $member->last_name];
+                })->toArray();
+                
+                // When editing, include current member if not already in list
+                if ($record && $record->member_id && !isset($options[$record->member_id])) {
+                    $currentMember = Member::find($record->member_id);
+                    if ($currentMember) {
+                        $options[$record->member_id] = $currentMember->first_name . ' ' . $currentMember->last_name;
+                    }
+                }
+                
+                return $options;
+            })
             ->required()
             ->searchable()
             ->placeholder('Select a VIP qualified for Life Class')
