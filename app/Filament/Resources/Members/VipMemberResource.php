@@ -27,7 +27,7 @@ class VipMemberResource extends BaseMemberResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?string $navigationLabel = 'Member - VIP';
+    protected static ?string $navigationLabel = 'Profile - VIP';
 
     protected static ?string $modelLabel = 'VIP Member';
 

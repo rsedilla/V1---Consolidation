@@ -25,7 +25,7 @@ class CellGroupResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationLabel = 'Member - Cell Groups';
+    protected static ?string $navigationLabel = 'Member - CG Progress';
 
     protected static ?int $navigationSort = 7;
 

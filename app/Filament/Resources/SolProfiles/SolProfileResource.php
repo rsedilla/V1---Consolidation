@@ -27,7 +27,7 @@ class SolProfileResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
-    protected static ?string $navigationLabel = 'LC & SOL Profiles';
+    protected static ?string $navigationLabel = 'SOL Profiles';
     
     protected static string|UnitEnum|null $navigationGroup = 'Training';
 

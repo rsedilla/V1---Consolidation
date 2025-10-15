@@ -26,7 +26,7 @@ class ConsolidatorMemberResource extends BaseMemberResource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static ?string $navigationLabel = 'Member - Consolidator';
+    protected static ?string $navigationLabel = 'Profile - Consolidator';
 
     protected static ?string $modelLabel = 'Consolidator Member';
 
