@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\StartUpYourNewLives\Schemas;
 
 use App\Models\Member;
-use App\Filament\Traits\HasMemberFields;
+use App\Filament\Traits\HasVipMemberFields;
 use App\Filament\Traits\HasLessonFormFields;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -13,7 +13,7 @@ use Filament\Forms\Components\Textarea;
 
 class StartUpYourNewLifeForm
 {
-    use HasMemberFields;
+    use HasVipMemberFields;
     use HasLessonFormFields;
     public static function configure(Schema $schema): Schema
     {

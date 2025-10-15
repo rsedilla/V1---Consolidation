@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\LifeclassCandidates\Schemas;
 
-use App\Filament\Traits\HasMemberFields;
+use App\Filament\Traits\HasQualifiedMemberFields;
 use App\Filament\Traits\HasLessonFormFields;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -11,7 +11,7 @@ use Filament\Forms\Components\Textarea;
 
 class LifeclassCandidateForm
 {
-    use HasMemberFields;
+    use HasQualifiedMemberFields;
     use HasLessonFormFields;
 
     public static function configure(Schema $schema): Schema

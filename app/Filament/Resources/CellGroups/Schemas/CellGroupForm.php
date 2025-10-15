@@ -5,7 +5,7 @@ namespace App\Filament\Resources\CellGroups\Schemas;
 
 use App\Models\Member;
 use App\Models\G12Leader;
-use App\Filament\Traits\HasMemberFields;
+use App\Filament\Traits\HasVipMemberFields;
 use App\Filament\Traits\HasLessonFormFields;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -16,7 +16,7 @@ use Filament\Forms\Components\DatePicker;
 
 class CellGroupForm
 {
-    use HasMemberFields;
+    use HasVipMemberFields;
     use HasLessonFormFields;
     public static function configure(Schema $schema): Schema
     {
