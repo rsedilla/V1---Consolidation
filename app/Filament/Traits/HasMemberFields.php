@@ -90,12 +90,21 @@ trait HasMemberFields
         $select = Select::make('member_id')
             ->label($label)
             ->required()
-            ->searchable()
+            ->searchable(fn ($record) => !$record) // Only searchable when creating
+            ->disabled(fn ($record) => (bool) $record) // Disabled when editing
             ->placeholder('Select a VIP member');
         
         if ($includeEditingMember) {
             // Use dynamic options for edit mode
             $select->options(function ($record) use ($scopeCallback) {
+                // When editing, just show current member (no search needed)
+                if ($record && $record->member_id) {
+                    $currentMember = Member::find($record->member_id);
+                    if ($currentMember) {
+                        return [$record->member_id => $currentMember->first_name . ' ' . $currentMember->last_name];
+                    }
+                }
+                // When creating, load available members with search
                 $vips = static::getFilteredVips($scopeCallback);
                 $options = static::formatMemberOptions($vips);
                 return static::includeCurrentMember($options, $record);
