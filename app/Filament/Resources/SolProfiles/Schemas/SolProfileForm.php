@@ -94,9 +94,9 @@ class SolProfileForm
             
             Select::make('current_sol_level_id')
                 ->label('Current SOL Level')
-                ->relationship('currentSolLevel', 'level_name')
-                ->options(SolLevel::orderBy('level_number')->pluck('level_name', 'id'))
+                ->relationship('currentSolLevel', 'level_name', fn ($query) => $query->orderBy('level_number'))
                 ->searchable()
+                ->preload()
                 ->required()
                 ->default(function () {
                     // Default to SOL 1
