@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             RolesTableSeeder::class,
             MemberTypesTableSeeder::class,
             G12LeadersTableSeeder::class,
+            SolLevelsTableSeeder::class,
             StartUpYourNewLifeTableSeeder::class,
             StartUpYourNewLifeLessonsTableSeeder::class,
         ]);
