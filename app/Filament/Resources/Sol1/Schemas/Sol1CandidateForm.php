@@ -24,8 +24,15 @@ class Sol1CandidateForm
                         return [$record->sol_profile_id => $record->solProfile->full_name];
                     }
                     // When creating, load available profiles with search
+                    // Get SOL 1 level ID dynamically
+                    $sol1Level = \App\Models\SolLevel::where('level_number', 1)->first();
+                    
+                    if (!$sol1Level) {
+                        return [];
+                    }
+                    
                     return SolProfile::whereDoesntHave('sol1Candidate')
-                        ->where('current_sol_level_id', 1)
+                        ->where('current_sol_level_id', $sol1Level->id)
                         ->orderBy('first_name')
                         ->orderBy('last_name')
                         ->get()

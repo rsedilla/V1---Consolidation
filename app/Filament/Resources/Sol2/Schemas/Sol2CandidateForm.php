@@ -25,8 +25,15 @@ class Sol2CandidateForm
                         return [$record->sol_profile_id => $record->solProfile->full_name];
                     }
                     // When creating, load available profiles with search
+                    // Get SOL 2 level ID dynamically
+                    $sol2Level = \App\Models\SolLevel::where('level_number', 2)->first();
+                    
+                    if (!$sol2Level) {
+                        return [];
+                    }
+                    
                     return SolProfile::whereDoesntHave('sol2Candidate')
-                        ->where('current_sol_level_id', 2)
+                        ->where('current_sol_level_id', $sol2Level->id)
                         ->orderBy('first_name')
                         ->orderBy('last_name')
                         ->get()
