@@ -13,7 +13,7 @@ class ListSol2Candidates extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // No CreateAction - SOL 2 candidates should only be created via promotion from SOL 1
+            Actions\CreateAction::make(),
         ];
     }
 }
