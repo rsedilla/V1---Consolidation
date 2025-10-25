@@ -9,16 +9,16 @@ trait HasDashboardLeaderFiltering
 {
     /**
      * Get leaders to display based on user role
-     * Admin sees top-level leaders (direct 12 of root)
-     * Leaders see only their direct children
+     * Users with leader records see their direct children
+     * Admin without leader record sees top-level leaders (direct 12 of root)
      */
     protected function getDisplayLeaders($user): Collection
     {
-        // IMPORTANT: Check isAdmin() FIRST before isLeader() because users can be both
-        if ($user->isAdmin()) {
-            return $this->getTopLevelLeaders();
-        } elseif ($user->isLeader() && $user->leaderRecord) {
+        // Check if user has a leader record (covers Leader and Equipping roles)
+        if ($user->leaderRecord) {
             return $this->getDirectChildren($user->leaderRecord->id);
+        } elseif ($user->isAdmin()) {
+            return $this->getTopLevelLeaders();
         }
         
         return collect();

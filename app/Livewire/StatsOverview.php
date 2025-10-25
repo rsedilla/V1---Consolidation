@@ -29,11 +29,12 @@ class StatsOverview extends StatsOverviewWidget
     {
         $stats = [];
         
-        // Add summary stats based on user role
-        if ($user instanceof User && $user->isAdmin()) {
-            $stats = $this->getAdminSummaryStats();
-        } elseif ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+        // Add summary stats based on user role and leader record
+        // Check for leader record first (covers both Leader and Equipping roles with leader records)
+        if ($user instanceof User && $user->leaderRecord) {
             $stats = $this->getLeaderSummaryStats($user);
+        } elseif ($user instanceof User && $user->isAdmin()) {
+            $stats = $this->getAdminSummaryStats();
         }
         
         // Add per-leader VIP count cards
