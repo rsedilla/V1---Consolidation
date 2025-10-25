@@ -102,7 +102,9 @@ class SolProfilesTable
                 
                 SelectFilter::make('g12_leader_id')
                     ->label('G12 Leader')
-                    ->relationship('g12Leader', 'name'),
+                    ->relationship('g12Leader', 'name')
+                    ->searchable()
+                    ->preload(),
                 
                 SelectFilter::make('is_cell_leader')
                     ->label('Cell Leaders')
