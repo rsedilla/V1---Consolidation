@@ -16,7 +16,7 @@ trait HasHierarchyFiltering
     /**
      * Get visible leader IDs for data filtering based on user role
      * - Admin: See all leaders (returns empty array, no filtering)
-     * - Equipping: See only assigned leader's hierarchy (including descendants)
+     * - Equipping: See their own hierarchy if they have a leader record (same as Leader role)
      * - Leader: See their own hierarchy (including descendants)
      * - User: No access (returns empty array)
      * 
@@ -29,13 +29,10 @@ trait HasHierarchyFiltering
             return [];
         }
 
-        // Equipping users see only their assigned leader's hierarchy
-        if ($this->isEquipping() && $this->assignedLeader) {
-            return Cache::remember(
-                "equipping_user_{$this->id}_visible_leaders",
-                1800, // 30 minutes
-                fn() => $this->assignedLeader->getAllDescendantIds()
-            );
+        // Equipping users see their own hierarchy (if they have a leader record)
+        // Just like Leaders, they maintain their own hierarchy boundaries
+        if ($this->isEquipping() && $this->leaderRecord) {
+            return $this->getVisibleLeaderIds();
         }
 
         // Leaders see their own hierarchy
