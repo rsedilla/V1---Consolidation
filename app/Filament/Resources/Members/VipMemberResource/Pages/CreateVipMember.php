@@ -6,6 +6,7 @@ use App\Filament\Resources\Members\VipMemberResource;
 use App\Filament\Traits\HandlesDatabaseErrors;
 use App\Services\MemberValidationService;
 use App\Livewire\StatsOverview;
+use App\Models\User;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,12 @@ class CreateVipMember extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        // Auto-assign g12_leader_id for leaders if not provided
+        $user = Auth::user();
+        if ($user instanceof User && $user->isLeader() && $user->leaderRecord && empty($data['g12_leader_id'])) {
+            $data['g12_leader_id'] = $user->leaderRecord->id;
+        }
+        
         // Simple validation for VIP members - just check for duplicates
         $validationErrors = MemberValidationService::validateMemberCreation($data);
         

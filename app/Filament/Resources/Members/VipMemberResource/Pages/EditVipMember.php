@@ -6,6 +6,7 @@ use App\Filament\Resources\Members\VipMemberResource;
 use App\Filament\Traits\HandlesDatabaseErrors;
 use App\Services\MemberValidationService;
 use App\Livewire\StatsOverview;
+use App\Models\User;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
@@ -34,6 +35,12 @@ class EditVipMember extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        // Auto-assign g12_leader_id for leaders if not provided
+        $user = Auth::user();
+        if ($user instanceof User && $user->isLeader() && $user->leaderRecord && empty($data['g12_leader_id'])) {
+            $data['g12_leader_id'] = $user->leaderRecord->id;
+        }
+        
         // Only validate if critical fields have changed
         $currentRecord = $this->getRecord();
         $needsValidation = false;
