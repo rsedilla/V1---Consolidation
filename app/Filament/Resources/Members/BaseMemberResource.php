@@ -47,13 +47,13 @@ abstract class BaseMemberResource extends Resource
 
     /**
      * Apply G12 leader hierarchy filtering
-     * Leaders can only see members in their hierarchy
+     * Users with leader records (Leader or Equipping) can only see members in their hierarchy
      */
     protected static function applyLeaderFiltering(Builder $query): void
     {
         $user = Auth::user();
         
-        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+        if ($user instanceof User && $user->leaderRecord) {
             // Get all leader IDs in this user's hierarchy (including themselves and descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
             $query->underLeaders($visibleLeaderIds);
@@ -69,12 +69,12 @@ abstract class BaseMemberResource extends Resource
         $user = Auth::user();
 
         // Admins can view any member
-        if ($user instanceof User && !$user->isLeader()) {
+        if ($user instanceof User && $user->isAdmin()) {
             return true;
         }
 
-        // Leaders can only view members in their hierarchy
-        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+        // Users with leader records (Leader or Equipping) can only view members in their hierarchy
+        if ($user instanceof User && $user->leaderRecord) {
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
             return in_array($record->g12_leader_id, $visibleLeaderIds);
         }
@@ -118,7 +118,7 @@ abstract class BaseMemberResource extends Resource
         $user = Auth::user();
         
         // Use the same hierarchy filtering logic as the main query
-        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
+        if ($user instanceof User && $user->leaderRecord) {
             return (string) static::getEloquentQuery()->count();
         }
         

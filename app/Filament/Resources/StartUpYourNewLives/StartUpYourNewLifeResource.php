@@ -53,8 +53,8 @@ class StartUpYourNewLifeResource extends Resource
             $q->notInLifeClass();
         });
         
-        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
-            // Leaders see records for their hierarchy (including descendants)
+        if ($user instanceof User && $user->leaderRecord) {
+            // Users with leader records (Leader or Equipping) see records for their hierarchy (including descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
             return $query->whereHas('member', function ($q) use ($visibleLeaderIds) {
                 $q->whereIn('g12_leader_id', $visibleLeaderIds);

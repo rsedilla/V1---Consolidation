@@ -52,8 +52,8 @@ class SolProfileResource extends Resource
             'sol3Candidate'
         ]);
         
-        if ($user instanceof User && $user->isLeader() && $user->leaderRecord) {
-            // Leaders see records for their hierarchy (including descendants)
+        if ($user instanceof User && $user->leaderRecord) {
+            // Users with leader records (Leader or Equipping) see records for their hierarchy (including descendants)
             $visibleLeaderIds = $user->leaderRecord->getAllDescendantIds();
             return $query->underLeaders($visibleLeaderIds);
         }
