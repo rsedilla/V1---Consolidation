@@ -4,12 +4,14 @@ namespace App\Filament\Resources\Sol2\Tables;
 
 use App\Filament\Traits\HasLessonTableColumns;
 use App\Filament\Traits\HasSol3Promotion;
+use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 
 class Sol2CandidatesTable
 {
@@ -45,8 +47,16 @@ class Sol2CandidatesTable
                 // Promote to SOL 3 Action (using HasSol3Promotion trait)
                 self::makeSol3PromotionAction(),
                 
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(function () {
+                        $user = Auth::user();
+                        return $user instanceof User && ($user->isAdmin() || $user->isEquipping());
+                    }),
                 DeleteAction::make()
+                    ->visible(function () {
+                        $user = Auth::user();
+                        return $user instanceof User && ($user->isAdmin() || $user->isEquipping());
+                    })
                     ->requiresConfirmation()
                     ->modalHeading('Delete SOL 2 Candidate')
                     ->modalDescription('Are you sure you want to permanently delete this SOL 2 candidate? This action cannot be undone and will remove all associated data.')

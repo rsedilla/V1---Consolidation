@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Sol3\Tables;
 
 use App\Filament\Traits\HasLessonTableColumns;
 use App\Models\Sol3Candidate;
+use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -14,6 +15,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Sol3CandidatesTable
 {
@@ -45,8 +47,16 @@ class Sol3CandidatesTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(function () {
+                        $user = Auth::user();
+                        return $user instanceof User && ($user->isAdmin() || $user->isEquipping());
+                    }),
                 DeleteAction::make()
+                    ->visible(function () {
+                        $user = Auth::user();
+                        return $user instanceof User && ($user->isAdmin() || $user->isEquipping());
+                    })
                     ->requiresConfirmation()
                     ->modalHeading('Delete SOL 3 Candidate')
                     ->modalDescription('Are you sure you want to permanently delete this SOL 3 candidate? This action cannot be undone and will remove all associated data.')

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Sol1\Tables;
 use App\Filament\Traits\HasLessonTableColumns;
 use App\Filament\Traits\HasSol2Promotion;
 use App\Models\Sol1Candidate;
+use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -15,6 +16,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Sol1CandidatesTable
 {
@@ -49,8 +51,16 @@ class Sol1CandidatesTable
                 // Promote to SOL 2 Action (using HasSol2Promotion trait)
                 self::makeSol2PromotionAction(),
                 
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(function () {
+                        $user = Auth::user();
+                        return $user instanceof User && ($user->isAdmin() || $user->isEquipping());
+                    }),
                 DeleteAction::make()
+                    ->visible(function () {
+                        $user = Auth::user();
+                        return $user instanceof User && ($user->isAdmin() || $user->isEquipping());
+                    })
                     ->requiresConfirmation()
                     ->modalHeading('Delete SOL 1 Candidate')
                     ->modalDescription('Are you sure you want to permanently delete this SOL 1 candidate? This action cannot be undone and will remove all associated data.')

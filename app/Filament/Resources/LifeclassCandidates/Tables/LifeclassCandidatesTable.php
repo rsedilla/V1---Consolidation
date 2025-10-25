@@ -4,11 +4,13 @@ namespace App\Filament\Resources\LifeclassCandidates\Tables;
 
 use App\Filament\Traits\HasSol1Promotion;
 use App\Filament\Traits\HasLessonTableColumns;
+use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Auth;
 
 class LifeclassCandidatesTable
 {
@@ -75,7 +77,11 @@ class LifeclassCandidatesTable
             ->recordActions([
                 // Promote to SOL 1 Action (using HasSol1Promotion trait)
                 self::makeSol1PromotionAction(),
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(function () {
+                        $user = Auth::user();
+                        return $user instanceof User && ($user->isAdmin() || $user->isEquipping());
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
