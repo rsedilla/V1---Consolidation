@@ -24,7 +24,7 @@ trait HasSolGradPromotion
             ->label('Move to SOL Grad')
             ->icon('heroicon-o-academic-cap')
             ->color('success')
-            ->visible(fn($record) => $record->isQualifiedForGraduation())
+            ->visible(fn($record) => $record->isCompleted() && !$record->isAtGraduateLevel())
             ->action(fn($record) => self::promoteToSolGrad($record));
     }
 
@@ -81,9 +81,12 @@ trait HasSolGradPromotion
      */
     protected static function graduateSol3Candidate($sol3Candidate): void
     {
-        $sol3Candidate->update([
-            'graduation_date' => now(),
-        ]);
+        // Only set graduation_date if it's not already set
+        if (is_null($sol3Candidate->graduation_date)) {
+            $sol3Candidate->update([
+                'graduation_date' => now(),
+            ]);
+        }
     }
 
     /**
