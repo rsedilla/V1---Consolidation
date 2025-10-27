@@ -71,4 +71,20 @@ class Sol3Candidate extends Model
     {
         return $this->isCompleted() && is_null($this->graduation_date);
     }
+
+    /**
+     * Check if this candidate has already graduated
+     */
+    public function hasGraduated(): bool
+    {
+        return !is_null($this->graduation_date);
+    }
+
+    /**
+     * Check if the associated SOL Profile is at Graduate level
+     */
+    public function isAtGraduateLevel(): bool
+    {
+        return $this->solProfile && $this->solProfile->current_sol_level_id == 4;
+    }
 }

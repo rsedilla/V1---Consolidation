@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('g12_leaders', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->index('user_id');
+            if (!Schema::hasColumn('g12_leaders', 'user_id')) {
+                $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+                $table->index('user_id');
+            }
         });
     }
 

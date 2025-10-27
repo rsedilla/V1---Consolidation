@@ -39,6 +39,24 @@ trait HasSolProfileHelpers
     }
 
     /**
+     * Check if this student is qualified for SOL Grad (graduation)
+     */
+    public function isQualifiedForSolGrad(): bool
+    {
+        return $this->current_sol_level_id == 3 && 
+               $this->sol3Candidate && 
+               $this->sol3Candidate->isCompleted();
+    }
+
+    /**
+     * Check if this student has graduated (SOL Grad)
+     */
+    public function isGraduated(): bool
+    {
+        return $this->current_sol_level_id == 4;
+    }
+
+    /**
      * Get completion progress for current level
      */
     public function getCompletionProgress(): array
@@ -94,7 +112,17 @@ trait HasSolProfileHelpers
             ];
         }
 
-        // Future: SOL 4 and beyond
+        // For SOL Grad (level 4) - already graduated, no more lessons
+        if ($this->current_sol_level_id == 4) {
+            return [
+                'completed' => 10,
+                'total' => 10,
+                'percentage' => 100,
+                'graduated' => true,
+            ];
+        }
+
+        // Future: SOL 5 and beyond
         return [
             'completed' => 0,
             'total' => 10,
@@ -107,8 +135,8 @@ trait HasSolProfileHelpers
      */
     public function promoteToNextLevel(): bool
     {
-        if ($this->current_sol_level_id >= 3) {
-            return false; // Already at max level
+        if ($this->current_sol_level_id >= 4) {
+            return false; // Already graduated
         }
 
         $this->current_sol_level_id++;

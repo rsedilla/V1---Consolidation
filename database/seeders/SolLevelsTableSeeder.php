@@ -37,6 +37,14 @@ class SolLevelsTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'level_number' => 4,
+                'level_name' => 'SOL Grad',
+                'description' => 'School of Leaders Graduate - Completed all SOL training levels',
+                'lesson_count' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

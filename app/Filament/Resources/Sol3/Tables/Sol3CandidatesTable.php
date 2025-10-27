@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Sol3\Tables;
 
 use App\Filament\Traits\HasLessonTableColumns;
+use App\Filament\Traits\HasSolGradPromotion;
 use App\Models\Sol3Candidate;
 use App\Models\User;
 use Filament\Actions\BulkActionGroup;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 class Sol3CandidatesTable
 {
     use HasLessonTableColumns;
+    use HasSolGradPromotion;
     
     public static function configure(Table $table): Table
     {
@@ -42,11 +44,20 @@ class Sol3CandidatesTable
                 
                 // SOL 3 Lesson Status Columns (L1-L10)
                 ...self::generateLessonColumns(10, 'lesson_', 'L'),
+                
+                // Graduation Status Badge
+                BadgeColumn::make('graduation_status')
+                    ->label('Status')
+                    ->getStateUsing(fn($record) => self::getSolGradStatus($record)['label'])
+                    ->color(fn($record) => self::getSolGradStatus($record)['color']),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
+                // Graduate Action
+                self::makeSolGradPromotionAction(),
+                
                 EditAction::make()
                     ->visible(function () {
                         $user = Auth::user();

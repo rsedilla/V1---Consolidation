@@ -9,7 +9,12 @@ class UsersTableSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('users')->delete();
+        // Only delete and seed if no users exist (fresh install)
+        if (DB::table('users')->count() > 0) {
+            $this->command->info('Users already exist. Skipping seeding.');
+            return;
+        }
+        
         DB::table('users')->insert([
             [
                 'name' => 'Admin',
