@@ -65,6 +65,18 @@ class Sol3Candidate extends Model
     // Lesson configuration (getLessonFields, getLessonCount) is in HasSolLessonConfiguration trait
 
     /**
+     * Scope to filter out candidates who have been promoted to SOL Graduate
+     * Hides them from SOL 3 Progress (they appear in SOL Graduate instead)
+     * Database records are preserved for history
+     */
+    public function scopeNotPromotedToSolGrad($query)
+    {
+        return $query->whereDoesntHave('solProfile', function ($q) {
+            $q->where('current_sol_level_id', '>=', 4);
+        });
+    }
+
+    /**
      * Check if this candidate has completed all lessons (for future SOL 4 or graduation)
      */
     public function isQualifiedForGraduation(): bool

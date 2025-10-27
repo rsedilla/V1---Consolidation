@@ -53,6 +53,10 @@ class Sol3CandidateResource extends Resource
         // Eager load relationships
         $query = parent::getEloquentQuery()->with(['solProfile.status', 'solProfile.g12Leader']);
         
+        // Hide candidates who have been promoted to SOL Graduate
+        // (Database records preserved, they just appear in SOL Graduate instead)
+        $query->notPromotedToSolGrad();
+        
         if ($user instanceof User && ($user->hasLeadershipRole())) {
             // Get visible leader IDs based on role (Equipping or Leader)
             $visibleLeaderIds = $user->getVisibleLeaderIdsForFiltering();
