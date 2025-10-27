@@ -16,19 +16,15 @@ use Illuminate\Support\Facades\DB;
 trait HasSolGradPromotion
 {
     /**
-     * Create the "Graduate from SOL" action button
+     * Create the "Move to SOL Grad" action button
      */
     protected static function makeSolGradPromotionAction(): Action
     {
         return Action::make('promote_to_sol_grad')
-            ->label('Mark as Graduate')
+            ->label('Move to SOL Grad')
             ->icon('heroicon-o-academic-cap')
             ->color('success')
             ->visible(fn($record) => $record->isQualifiedForGraduation())
-            ->requiresConfirmation()
-            ->modalHeading('Graduate from School of Leaders?')
-            ->modalDescription('This will mark the student as a SOL Graduate. They will have completed all three levels of training.')
-            ->modalSubmitActionLabel('Yes, Mark as Graduate')
             ->action(fn($record) => self::promoteToSolGrad($record));
     }
 
@@ -96,11 +92,11 @@ trait HasSolGradPromotion
     protected static function getSolGradStatus($record): array
     {
         if ($record->solProfile && $record->solProfile->isGraduated()) {
-            return ['label' => '🎓 Graduate', 'color' => 'success'];
+            return ['label' => '✓ In SOL Grad', 'color' => 'info'];
         }
         
         if ($record->isCompleted()) {
-            return ['label' => 'Ready to Graduate', 'color' => 'success'];
+            return ['label' => 'Ready', 'color' => 'success'];
         }
         
         return [
@@ -118,8 +114,8 @@ trait HasSolGradPromotion
         
         Notification::make()
             ->success()
-            ->title('🎓 Congratulations!')
-            ->body("✓ {$fullName} has graduated from School of Leaders! They have completed all three levels of training.")
+            ->title('Successfully Promoted!')
+            ->body("✓ {$fullName} has been promoted to SOL Grad. You can now view them in SOL Graduate.")
             ->send();
     }
 
@@ -131,9 +127,9 @@ trait HasSolGradPromotion
         $fullName = trim("{$solProfile->first_name} {$solProfile->last_name}");
         
         Notification::make()
-            ->info()
-            ->title('Already Graduated')
-            ->body("{$fullName} has already graduated from School of Leaders.")
+            ->warning()
+            ->title('Already Promoted')
+            ->body("{$fullName} is already in SOL Grad.")
             ->send();
     }
 
@@ -144,7 +140,7 @@ trait HasSolGradPromotion
     {
         Notification::make()
             ->danger()
-            ->title('Graduation Failed')
+            ->title('Promotion Failed')
             ->body("An error occurred: {$message}")
             ->send();
     }
